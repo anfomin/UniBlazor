@@ -1,0 +1,20 @@
+@inject ILogger<UniBrowserTimeZone> Logger
+@inject TimeProvider TimeProvider
+@inject IJSRuntime JS
+
+@code {
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && TimeProvider is BrowserTimeProvider browserTimeProvider && !browserTimeProvider.IsTimeZoneSet)
+		{
+			try
+			{
+				await using var module = await JS.ImportAsync("/_content/UniBlazor/Components/UniBrowserTimeZone.razor.js");
+				string timeZone = await module.InvokeAsync<string>("getTimeZone");
+				browserTimeProvider.SetBrowserTimeZone(timeZone);
+				Logger.LogDebug("Browser timezone set to {timeZone}", timeZone);
+			}
+			catch (JSDisconnectedException) { }
+		}
+	}
+}

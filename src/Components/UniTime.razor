@@ -1,0 +1,37 @@
+@implements IDisposable
+@inject TimeProvider TimeProvider
+
+@if (Value is {} value)
+{
+	@value.ToLocal(TimeProvider).ToString(Format ?? "g")
+}
+else if (Placeholder != "")
+{
+	<span class="placeholder">@(Placeholder ?? "–")</span>
+}
+
+@code {
+	[Parameter]
+	public DateTime? Value { get; set; }
+
+	[Parameter]
+	public string? Format { get; set; }
+
+	[Parameter]
+	public string? Placeholder { get; set; }
+
+	protected override void OnInitialized()
+	{
+		if (TimeProvider is BrowserTimeProvider browserTimeProvider)
+			browserTimeProvider.LocalTimeZoneChanged += LocalTimeZoneChanged;
+	}
+
+	public void Dispose()
+	{
+		if (TimeProvider is BrowserTimeProvider browserTimeProvider)
+			browserTimeProvider.LocalTimeZoneChanged -= LocalTimeZoneChanged;
+	}
+
+	void LocalTimeZoneChanged(object? sender, TimeZoneInfo e)
+		=> StateHasChanged();
+}

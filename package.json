@@ -1,0 +1,14 @@
+{
+	"name": "uniblazor",
+	"version": "1.0.0",
+	"author": "Alexander Fomin",
+	"private": true,
+	"scripts": {
+		"preinstall": "dotnet restore",
+		"clean": "rm -rf node_modules package-lock.json pnpm-lock.yaml yarn.lock artifacts src/bin src/obj"
+	},
+	"devDependencies": {
+		"typescript": "~5.7.3",
+		"imask": "^7.6.1"
+	}
+}

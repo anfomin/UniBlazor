@@ -1,0 +1,22 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "Node",
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"lib": [
+			"ESNext",
+			"ESNext.Array",
+			"ESNext.Promise",
+			"DOM",
+			"DOM.Iterable"
+		]
+	},
+	"include": [
+		"src/**/*.ts"
+	]
+}
