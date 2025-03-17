@@ -23,9 +23,9 @@ public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
 	{
 		if (!IsDisposed)
 		{
+			IsDisposed = true;
 			await DisposeAsyncCore().ConfigureAwait(false);
 			GC.SuppressFinalize(this);
-			IsDisposed = true;
 		}
 	}
 
