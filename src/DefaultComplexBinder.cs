@@ -1,18 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using Microsoft.VisualBasic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UniBlazor;
 
 /// <summary>
 /// Provides creating complex types with default constructor and binding their properties from query string.
 /// </summary>
-public class DefaultComplexBinder : IComplexObjectBinder
+public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexObjectBinder
 {
 	public delegate T ParseDelegate<T>(ReadOnlySpan<char> s);
 	public delegate bool TryParseDelegate<T>(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out T? result);
 	static readonly Dictionary<Type, TryParseDelegate<object>> Parsers = [];
+	readonly IServiceProvider _serviceProvider = serviceProvider;
 
 	static bool TryParse(ReadOnlySpan<char> s, out int result) => int.TryParse(s, CultureInfo.InvariantCulture, out result);
 	static bool TryParse(ReadOnlySpan<char> s, out long result) => long.TryParse(s, CultureInfo.InvariantCulture, out result);
@@ -113,7 +114,7 @@ public class DefaultComplexBinder : IComplexObjectBinder
 	/// <inheritdoc />
 	public object Create(Type type, Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>>? queryString)
 	{
-		var obj = Activator.CreateInstance(type)!;
+		var obj = ActivatorUtilities.CreateInstance(_serviceProvider, type);
 		if (queryString != null)
 			Bind(obj, queryString);
 		return obj;

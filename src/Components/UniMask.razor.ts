@@ -108,21 +108,33 @@ class UniMask {
 		switch (maskFormat) {
 			case 'date':
 				return new IMask.MaskedDate({ overwrite: true });
+			case 'time':
+			case 'timeShort':
+				return {
+					mask: 'hh:`mm',
+					overwrite: true,
+					blocks: {
+						hh: { mask: IMask.MaskedRange, from: 0, to: 23 },
+						mm: { mask: IMask.MaskedRange, from: 0, to: 59 }
+					}
+				};
+			case 'timeLong':
+				return {
+					mask: 'hh:`mm:`ss',
+					overwrite: true,
+					blocks: {
+						hh: { mask: IMask.MaskedRange, from: 0, to: 23 },
+						mm: { mask: IMask.MaskedRange, from: 0, to: 59 },
+						ss: { mask: IMask.MaskedRange, from: 0, to: 59 }
+					}
+				};
 			case 'duration':
 				return {
 					mask: 'mm:`ss',
 					overwrite: true,
 					blocks: {
-						mm: {
-							mask: IMask.MaskedRange,
-							from: 0,
-							to: 59
-						},
-						ss: {
-							mask: IMask.MaskedRange,
-							from: 0,
-							to: 59
-						}
+						mm: { mask: IMask.MaskedRange, from: 0, to: 59 },
+						ss: { mask: IMask.MaskedRange, from: 0, to: 59 }
 					}
 				};
 			case 'phone':
@@ -130,7 +142,7 @@ class UniMask {
 					mask: '+{7} 000 000-00-00'
 				}
 			default:
-				console.warn('Mask format not supported', maskFormat);
+				console.warn('Mask format not supported:', maskFormat);
 				return null;
 		}
 	}
