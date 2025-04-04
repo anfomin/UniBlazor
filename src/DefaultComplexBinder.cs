@@ -10,8 +10,8 @@ namespace UniBlazor;
 /// </summary>
 public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexObjectBinder
 {
-	public delegate T ParseDelegate<T>(ReadOnlySpan<char> s);
-	public delegate bool TryParseDelegate<T>(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out T? result);
+	public delegate T ParseDelegate<out T>(ReadOnlySpan<char> s);
+	public delegate bool TryParseDelegate<T>(ReadOnlySpan<char> s, [MaybeNullWhen(false)] out T result);
 	static readonly Dictionary<Type, TryParseDelegate<object>> Parsers = [];
 	readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -47,7 +47,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	public static void RegisterParser<T>(TryParseDelegate<T> parser)
 		where T : notnull
 	{
-		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object? result) =>
+		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
 		{
 			if (parser(s, out var value))
 			{
@@ -65,7 +65,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	public static void RegisterParser<T>(ParseDelegate<T> parser)
 		where T : notnull
 	{
-		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object? result) =>
+		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
 		{
 			try
 			{
@@ -89,19 +89,18 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 			return false;
 		}
 
-		string name = nameof(IParsable<>.TryParse);
-		string nameEnding = $".{name}";
+		const string name = "TryParse";
+		const string nameEnding = $".{name}";
 		var typeRef = type.MakeByRefType();
 		var tryParseMethod = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).First(m =>
 			(m.Name == name || m.Name.EndsWith(nameEnding))
 			&& m.ReturnParameter.ParameterType == typeof(bool)
-			&& m.GetParameters() is var pars
-			&& pars.Length == 3
+			&& m.GetParameters() is { Length: 3 } pars
 			&& pars[0].ParameterType == typeof(string)
 			&& pars[1].ParameterType == typeof(IFormatProvider)
 			&& pars[2].ParameterType == typeRef
-		)!;
-		parser = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object? result) =>
+		);
+		parser = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
 		{
 			object?[] parameters = [s.ToString(), null, null];
 			bool res = (bool)tryParseMethod.Invoke(null, parameters)!;
@@ -125,28 +124,28 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	{
 		foreach (var prop in obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty))
 		{
-			if (queryString.TryGetValue(prop.Name.AsMemory(), out var queryValue) && !queryValue.IsEmpty)
+			if (!queryString.TryGetValue(prop.Name.AsMemory(), out var queryValue) || queryValue.IsEmpty)
+				continue;
+			
+			var propertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+			if (Parsers.TryGetValue(propertyType, out var parser))
 			{
-				var propertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-				if (Parsers.TryGetValue(propertyType, out var parser))
-				{
-					if (parser(queryValue.Span, out var parserValue))
-						prop.SetValue(obj, parserValue);
-				}
-				else if (propertyType.IsEnum)
-				{
-					if (Enum.TryParse(propertyType, queryValue.Span, ignoreCase: true, out var enumValue))
-						prop.SetValue(obj, enumValue);
-				}
-				else if (TryGetParserForIParsable(propertyType, out var parsableParser))
-				{
-					Parsers[propertyType] = parsableParser;
-					if (parsableParser(queryValue.Span, out var parsableValue))
-						prop.SetValue(obj, parsableValue);
-				}
-				else
-					throw new NotSupportedException($"Type {propertyType} is not supported for query parameters");
+				if (parser(queryValue.Span, out var parserValue))
+					prop.SetValue(obj, parserValue);
 			}
+			else if (propertyType.IsEnum)
+			{
+				if (Enum.TryParse(propertyType, queryValue.Span, ignoreCase: true, out var enumValue))
+					prop.SetValue(obj, enumValue);
+			}
+			else if (TryGetParserForIParsable(propertyType, out var parsableParser))
+			{
+				Parsers[propertyType] = parsableParser;
+				if (parsableParser(queryValue.Span, out var parsableValue))
+					prop.SetValue(obj, parsableValue);
+			}
+			else
+				throw new NotSupportedException($"Type {propertyType} is not supported for query parameters");
 		}
 	}
 }

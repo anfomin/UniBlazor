@@ -28,7 +28,7 @@ public sealed class BrowserTimeProvider : TimeProvider
 	{
 		if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out var timeZoneInfo))
 			timeZoneInfo = null;
-		if (timeZoneInfo != LocalTimeZone)
+		if (!LocalTimeZone.Equals(timeZoneInfo))
 		{
 			_browserTimeZone = timeZoneInfo;
 			LocalTimeZoneChanged?.Invoke(this, LocalTimeZone);

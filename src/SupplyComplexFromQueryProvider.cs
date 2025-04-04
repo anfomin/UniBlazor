@@ -12,15 +12,15 @@ namespace UniBlazor;
 /// </summary>
 public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, NavigationManager navigation) : IDisposable
 {
-	static readonly object _unboundLifetime;
-	static readonly MethodInfo _componentNotifyCascadingValueChanged;
+	static readonly object UnboundLifetime;
+	static readonly MethodInfo ComponentNotifyCascadingValueChanged;
 
 	static SupplyComplexFromQueryProvider()
 	{
 		var typeParameterViewLifetime = typeof(IComponent).Assembly.GetType("Microsoft.AspNetCore.Components.Rendering.ParameterViewLifetime")!;
 		var unboundField = typeParameterViewLifetime.GetField("Unbound", BindingFlags.Static | BindingFlags.Public)!;
-		_unboundLifetime = unboundField.GetValue(null)!;
-		_componentNotifyCascadingValueChanged = typeof(ComponentState).GetMethod("NotifyCascadingValueChanged", BindingFlags.Instance | BindingFlags.NonPublic)!;
+		UnboundLifetime = unboundField.GetValue(null)!;
+		ComponentNotifyCascadingValueChanged = typeof(ComponentState).GetMethod("NotifyCascadingValueChanged", BindingFlags.Instance | BindingFlags.NonPublic)!;
 	}
 
 	readonly IComplexObjectBinder _binder = binder;
@@ -140,10 +140,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 		foreach (var group in _subscribers.GroupBy(s => s.ComponentState))
 		{
 			if (group.Any(s => changedTypes.Contains(s.PropertyType)))
-			{
-				var componentState = group.Key;
-				_componentNotifyCascadingValueChanged.Invoke(group.Key, [_unboundLifetime]);
-			}
+				ComponentNotifyCascadingValueChanged.Invoke(group.Key, [UnboundLifetime]);
 		}
 	}
 }

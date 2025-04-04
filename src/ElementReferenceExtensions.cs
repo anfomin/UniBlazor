@@ -17,11 +17,11 @@ public static class ElementReferenceExtensions
 	/// <param name="position">Scroll block position. Default start.</param>
 	public static ValueTask ScrollIntoViewAsync(this ElementReference elementReference, ScrollBehavior behavior = ScrollBehavior.Smooth, ScrollPosition position = ScrollPosition.Start)
 	{
-		var js = elementReference.GetJSRuntime();
+		var js = elementReference.GetJsRuntime();
 		return js.InvokeVoidAsync("UniBlazor.scrollIntoView", elementReference, behavior.ToString().ToLower(), position.ToString().ToLower());
 	}
 
-	internal static IJSRuntime GetJSRuntime(this ElementReference elementReference)
+	internal static IJSRuntime GetJsRuntime(this ElementReference elementReference)
 	{
 		if (elementReference.Context is not WebElementReferenceContext context)
 			throw new InvalidOperationException("ElementReference has not been configured correctly.");

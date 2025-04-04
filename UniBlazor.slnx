@@ -1,3 +1,10 @@
 <Solution>
-	<Project Path="src/UniBlazor.csproj" />
+  <Folder Name="/Root/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="package.json" />
+    <File Path="publish.sh" />
+    <File Path="tsconfig.json" />
+  </Folder>
+  <Project Path="src/UniBlazor.csproj" />
 </Solution>
