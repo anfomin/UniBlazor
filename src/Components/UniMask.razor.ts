@@ -20,6 +20,7 @@ export function create(): Promise<UniMask> {
 
 class UniMask {
 	readonly #observer: MutationObserver;
+	readonly #isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 	constructor() {
 		for (const input of document.querySelectorAll<HTMLInputElement>('input[data-mask]'))
@@ -66,45 +67,13 @@ class UniMask {
 			const mask = IMask(input, options);
 			masks.set(input, mask);
 
-			let hasInputAfterFocus = false;
-			input.addEventListener('focus', () => {
-				// console.log('focus', 'input value', input.value, 'mask value', mask.value);
-				mask.updateValue();
-				mask.updateOptions({ lazy: false });
-				hasInputAfterFocus = false;
-			});
-			input.addEventListener('input', () => hasInputAfterFocus = true);
-			input.addEventListener('blur', () => {
-				// console.log('blur', 'input value', input.value, 'mask value', mask.value, 'typed', mask.typedValue, 'unmasked', mask.unmaskedValue);
-				const beforeValue = input.value;
-				mask.updateOptions({ lazy: true });
-				if (hasInputAfterFocus && !mask.typedValue && beforeValue) {
-					// console.log('mask clearing value', beforeValue, 'current', input.value);
-
-					// send new value to blazor server
-					setTimeout(() => {
-						input.value = '';
-						input.dispatchEvent(new Event('input', { bubbles: true }));
-						input.dispatchEvent(new Event('change', { bubbles: true }));
-					}, 50);
-
-					// check value refreshed from blazor server
-					let n = 0;
-					const interval = setInterval(() => {
-						n++;
-						if (input.value == beforeValue) {
-							input.value = '';
-							clearInterval(interval);
-						}
-						else if (n >= 20)
-							clearInterval(interval);
-					}, 50);
-				}
-			});
+			// setting lazy=false on Safari breaks the input
+			if (!this.#isSafari)
+				this.#enableLazyOnFocus(input, mask);
 		}
 	}
 
-	#getMaskOptions(maskFormat: string): Masked | FactoryStaticOpts | null {
+	#getMaskOptions(maskFormat: string): Masked<any> | FactoryStaticOpts | null {
 		switch (maskFormat) {
 			case 'date':
 				return new IMask.MaskedDate({ overwrite: true });
@@ -145,5 +114,29 @@ class UniMask {
 				console.warn('Mask format not supported:', maskFormat);
 				return null;
 		}
+	}
+
+	#enableLazyOnFocus(input: HTMLInputElement, mask: InputMask<Masked<any> | FactoryStaticOpts>): void {
+		let hasInputAfterFocus = false;
+		input.addEventListener('focus', () => {
+			// console.log('focus', 'input value', input.value, 'mask value', mask.value);
+			mask.updateValue();
+			mask.updateOptions({ lazy: false });
+			hasInputAfterFocus = false;
+		});
+		input.addEventListener('input', () => hasInputAfterFocus = true);
+		input.addEventListener('blur', () => {
+			// console.log('blur', 'input value', input.value, 'mask value', mask.value, 'typed', mask.typedValue, 'unmasked', mask.unmaskedValue);
+			const beforeValue = input.value;
+			mask.updateOptions({ lazy: true });
+			// console.log('blur after lazy', 'input value', input.value, 'mask value', mask.value, 'typed', mask.typedValue, 'unmasked', mask.unmaskedValue);
+			if (hasInputAfterFocus && !mask.typedValue && beforeValue) {
+				// console.log('mask clearing value', beforeValue, 'current', input.value);
+				// send new value to blazor server
+				input.value = '';
+				input.dispatchEvent(new Event('input', { bubbles: true }));
+				input.dispatchEvent(new Event('change', { bubbles: true }));
+			}
+		});
 	}
 }
