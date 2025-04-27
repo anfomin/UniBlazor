@@ -33,6 +33,8 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<PreBuildEvent>tsc</PreBuildEvent>
+		<PreBuildEvent>
+			npm exec -c 'esbuild $(MSBuildProjectDirectory)/wwwroot/*.ts $(MSBuildProjectDirectory)/Components/*.ts --outdir=$(MSBuildProjectDirectory) --minify --charset=utf8'
+		</PreBuildEvent>
 	</PropertyGroup>
 </Project>

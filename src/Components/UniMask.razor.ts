@@ -6,16 +6,10 @@ declare global {
 }
 const masks = new WeakMap<HTMLInputElement, InputMask<any>>();
 
-export function create(): Promise<UniMask> {
-	if (window['IMask'])
-		return Promise.resolve(new UniMask());
-
-	const { promise, resolve } = Promise.withResolvers<UniMask>();
-	const script = document.createElement('script');
-	script.src = `https://unpkg.com/imask@7.6.1`;
-	script.addEventListener('load', () => resolve(new UniMask()));
-	document.body.appendChild(script);
-	return promise;
+export async function create(): Promise<UniMask> {
+	if (!window['IMask'])
+		await UniBlazor.loadScript('https://unpkg.com/imask@7.6.1');
+	return new UniMask();
 }
 
 class UniMask {
@@ -23,7 +17,8 @@ class UniMask {
 	readonly #isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 	constructor() {
-		for (const input of document.querySelectorAll<HTMLInputElement>('input[data-mask]'))
+		const selector = 'input[data-mask],input[data-mask-regexp]';
+		for (const input of document.querySelectorAll<HTMLInputElement>(selector))
 			this.#applyMask(input);
 
 		this.#observer = new MutationObserver(mutations => {
@@ -33,7 +28,7 @@ class UniMask {
 					if (node instanceof HTMLInputElement && node.dataset.mask)
 						inputs.add(node);
 					else if (node instanceof HTMLElement) {
-						for (const input of node.querySelectorAll<HTMLInputElement>('input[data-mask]'))
+						for (const input of node.querySelectorAll<HTMLInputElement>(selector))
 							inputs.add(input);
 					}
 				}
@@ -49,17 +44,17 @@ class UniMask {
 	}
 
 	#applyMask(input: HTMLInputElement): void {
-		const maskFormat = input.dataset.mask;
-		if (!maskFormat)
+		const maskType = input.dataset.mask;
+		const maskRegexp = input.dataset.maskRegexp;
+		const options = maskType ? this.#getMaskOptionsForType(maskType)
+			: maskRegexp ? { mask: new RegExp(maskRegexp) }
+			: null;
+		if (!options)
 			return;
 		// if (input.type != 'text') {
 		// 	console.warn('Unable to apply mask to input with type not "text"', input);
 		// 	return;
 		// }
-
-		const options = this.#getMaskOptions(maskFormat);
-		if (!options)
-			return;
 
 		if (masks.has(input))
 			masks.get(input)?.updateOptions(options);
@@ -73,8 +68,10 @@ class UniMask {
 		}
 	}
 
-	#getMaskOptions(maskFormat: string): Masked<any> | FactoryStaticOpts | null {
-		switch (maskFormat) {
+	#getMaskOptionsForType(type: string): Masked<any> | FactoryStaticOpts | null {
+		switch (type) {
+			case 'digits':
+				return { mask: /^\d+$/ };
 			case 'date':
 				return new IMask.MaskedDate({ overwrite: true });
 			case 'time':
@@ -111,7 +108,7 @@ class UniMask {
 					mask: '+{7} 000 000-00-00'
 				}
 			default:
-				console.warn('Mask format not supported:', maskFormat);
+				console.warn(`Mask type '${type}' is not supported.`, 'Supported types are: digits, date, time, timeShort, timeLong, duration, phone.');
 				return null;
 		}
 	}
