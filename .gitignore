@@ -19,12 +19,11 @@ src/**/*.js.map
 *.ide
 *.log
 *.publishsettings
+/.idea/shelf/
+/.idea/httpRequests/
 /.idea/**/workspace.xml
 /.idea/**/tasks.xml
 /.idea/**/projectSettingsUpdater.xml
-/.idea/shelf/*
-/.idea/dictionaries
-/.idea/httpRequests/
 
 # System files
 .DS_Store

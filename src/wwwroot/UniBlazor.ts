@@ -21,7 +21,7 @@ window.UniBlazor = {
 	},
 
 	detectOldBrowser: async function(min?: BrowserList): Promise<boolean> {
-		const minVersions: BrowserList = min || { chrome: 119, firefox: 121, safari: [17, 4], ios: [17, 4], edge: 119, opera: 105, yandexbrowser: [23, 9] };
+		const minVersions: BrowserList = min || { chrome: 112, firefox: 117, safari: [16, 5], ios: [16, 5], edge: 112, opera: 98, yandexbrowser: [23, 5] };
 		const { detect } = await import(<any>'https://unpkg.com/detect-browser@5.3.0/es/index.js');
 		const { name, version } = detect();
 		const match = /^(\d+)\.(\d+)(\.|$)/.exec(version);
