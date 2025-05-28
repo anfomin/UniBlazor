@@ -1,12 +1,13 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using UniBlazor;
+using UniBlazor.Internal;
 
-namespace UniBlazor;
+namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Extensions for <see cref="IServiceCollection"/>.
+/// UniBlazor extensions for services registration.
 /// </summary>
-public static class ServiceExtensions
+public static class UniBlazorServiceExtensions
 {
 	/// <summary>
 	/// Registers browser time provider as the default time provider.

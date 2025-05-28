@@ -96,4 +96,14 @@ public static class ComponentHelper
 			(EventCallback c1, EventCallback c2) => c1.HasDelegate == c2.HasDelegate, // do not compare event callback delegates
 			_ => value1.Equals(value2)
 		};
+
+	/// <summary>
+	/// Adds "@2x" suffix to the file path.
+	/// </summary>
+	/// <param name="path">File path to add suffix to.</param>
+	public static string Get2X(string path)
+	{
+		var (name, ext) = PathHelper.SplitExtension(path);
+		return $"{name}@2x{ext}";
+	}
 }

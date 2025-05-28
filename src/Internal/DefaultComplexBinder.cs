@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace UniBlazor;
+namespace UniBlazor.Internal;
 
 /// <summary>
 /// Provides creating complex types with default constructor and binding their properties from query string.
