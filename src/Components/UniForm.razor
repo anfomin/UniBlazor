@@ -1,0 +1,12 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+
+<NavigationLock ConfirmExternalNavigation="ShouldConfirmNavigation" OnBeforeInternalNavigation="OnBeforeNavigationAsync" />
+<EditForm @ref="_form" Model="Model" OnSubmit="SubmitAsync" id="@Id" class="@Class">
+	<DataAnnotationsValidator />
+	<ValidationSummary Model="Model" class="mud-alert mud-alert-text-error span-all" />
+	<CascadingValue Value="this" IsFixed>
+		@ChildContent
+	</CascadingValue>
+	<button type="submit" hidden></button>
+</EditForm>

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace UniBlazor;
 
+/// <summary>
+/// Provides extensions for <see cref="NavigationManager"/>.
+/// </summary>
 public static class NavigationExtensions
 {
 	/// <summary>

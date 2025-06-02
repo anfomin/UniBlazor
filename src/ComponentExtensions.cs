@@ -1,10 +1,23 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace UniBlazor;
 
-public static class HtmlRendererExtensions
+/// <summary>
+/// Provides extensions for Blazor components.
+/// </summary>
+public static class ComponentExtensions
 {
+	/// <summary>
+	/// Signals that the value for the specified field has changed.
+	/// </summary>
+	/// <param name="editContext">Current edit context.</param>
+	/// <param name="accessor">Field accessor whose value has been changed.</param>
+	public static void NotifyFieldChanged<TField>(this EditContext editContext, Expression<Func<TField>> accessor)
+		=> editContext.NotifyFieldChanged(FieldIdentifier.Create(accessor));
+
 	/// <summary>
 	/// Renders a Blazor component to HTML asynchronously.
 	/// </summary>
