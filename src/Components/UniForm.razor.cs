@@ -43,10 +43,26 @@ public sealed partial class UniForm : ComponentBase, IAsyncDisposable
 	public object? Model { get; set; }
 
 	/// <summary>
-	/// Specified form CSS class.
+	/// Specifies form CSS class.
 	/// </summary>
 	[Parameter]
 	public string? Class { get; set; }
+
+	/// <summary>
+	/// Specifies form CSS style.
+	/// </summary>
+	[Parameter]
+	public string? Style { get; set; }
+
+	/// <summary>
+	/// Specifies CSS class for validation summary.
+	/// </summary>
+	public string? ValidationClass { get; set; }
+
+	/// <summary>
+	/// Specifies CSS style for validation summary.
+	/// </summary>
+	public string? ValidationStyle { get; set; }
 
 	/// <summary>
 	/// Specifies the content to be rendered inside this <see cref="T:Microsoft.AspNetCore.Components.Forms.EditForm" />.
@@ -86,6 +102,16 @@ public sealed partial class UniForm : ComponentBase, IAsyncDisposable
 	/// Gets if form should confirm navigation.
 	/// </summary>
 	public bool ShouldConfirmNavigation => ConfirmNavigation && Model != null && _form?.EditContext?.IsModified() == true;
+
+	/// <summary>
+	/// Specifies default CSS class for every <see cref="UniForm"/>.
+	/// </summary>
+	public static string? DefaultClass { get; set; }
+
+	/// <summary>
+	/// Specifies default CSS style for every <see cref="UniForm"/> validation summary.
+	/// </summary>
+	public static string? DefaultValidationClass { get; set; }
 
 	/// <inheritdoc />
 	protected override async Task OnAfterRenderAsync(bool firstRender)

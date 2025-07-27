@@ -5,7 +5,7 @@ export async function scrollToFirstError(formId: string): Promise<boolean> {
 
 	await delay(100);
 	const element = form.querySelector('.validation-message')?.parentElement
-		|| form.querySelector('.mud-input-error')
+		|| form.querySelector('[aria-invalid=true]')
 		|| form;
 	element.scrollIntoView({ behavior: 'smooth' });
 	return true;

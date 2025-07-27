@@ -2,9 +2,12 @@
 @using Microsoft.AspNetCore.Components.Routing
 
 <NavigationLock ConfirmExternalNavigation="ShouldConfirmNavigation" OnBeforeInternalNavigation="OnBeforeNavigationAsync" />
-<EditForm @ref="_form" Model="Model" OnSubmit="SubmitAsync" id="@Id" class="@Class">
+<EditForm @ref="_form" Model="Model" OnSubmit="SubmitAsync"
+	id="@Id" class="@CssClass.Default(DefaultClass).Add(Class)" style="@Style">
 	<DataAnnotationsValidator />
-	<ValidationSummary Model="Model" class="mud-alert mud-alert-text-error span-all" />
+	<ValidationSummary Model="Model"
+		class="@CssClass.Default(DefaultValidationClass).Add(ValidationClass)"
+		style="@ValidationStyle" />
 	<CascadingValue Value="this" IsFixed>
 		@ChildContent
 	</CascadingValue>

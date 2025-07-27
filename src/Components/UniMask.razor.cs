@@ -33,6 +33,7 @@ public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 				_jsMask = new(await module.InvokeAsync<IJSObjectReference>("create"));
 			}
 			catch (JSDisconnectedException) { }
+			catch (JSException ex) when (ex.Message == "null") { }
 		}
 	}
 
