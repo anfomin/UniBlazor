@@ -17,7 +17,15 @@ public static class ComponentHelper
 	/// </summary>
 	/// <param name="expression">Property expression.</param>
 	public static string Label<T>(Expression<Func<T>> expression)
-		=> LabelInternal(expression, edit: false);
+		=> LabelInternal(expression.Body);
+
+	/// <summary>
+	/// Returns label for property <paramref name="expression"/>
+	/// from <see cref="DisplayAttribute"/>, <see cref="DisplayNameAttribute"/> or property name.
+	/// </summary>
+	/// <param name="expression">Property expression.</param>
+	public static string LabelFor<T>(Expression<Func<T, object?>> expression)
+		=> LabelInternal(expression.Body);
 
 	/// <summary>
 	/// Returns label for property <paramref name="expression"/>
@@ -26,25 +34,36 @@ public static class ComponentHelper
 	/// </summary>
 	/// <param name="expression">Property expression.</param>
 	public static string LabelEdit<T>(Expression<Func<T>> expression)
-		=> LabelInternal(expression, edit: true);
+		=> LabelInternal(expression.Body, edit: true);
 
 	/// <summary>
 	/// Returns label for property <paramref name="expression"/>
 	/// from <see cref="DisplayAttribute"/>, <see cref="DisplayNameAttribute"/> or property name.
+	/// Adds "*" char is property marked with <see cref="RequiredAttribute"/> or not nullable.
 	/// </summary>
 	/// <param name="expression">Property expression.</param>
-	public static string LabelFor<T>(Expression<Func<T, object?>> expression)
-	{
-		var memberInfo = GetPropertyInformation(expression.Body) ?? throw new ArgumentException("No property reference expression was found", nameof(expression));
-		string name = memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Name
-			?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
-			?? memberInfo.Name;
-		return name;
-	}
+	public static string LabelEditFor<T>(Expression<Func<T, object?>> expression)
+		=> LabelInternal(expression.Body, edit: true);
 
-	static string LabelInternal<T>(Expression<Func<T>> expression, bool edit)
+	/// <summary>
+	/// Returns description for property <paramref name="expression"/>
+	/// from <see cref="DisplayAttribute"/> or <see cref="DescriptionAttribute"/>.
+	/// </summary>
+	/// <param name="expression">Property expression.</param>
+	public static string? Description<T>(Expression<Func<T>> expression)
+		=> DescriptionInternal(expression.Body);
+
+	/// <summary>
+	/// Returns description for property <paramref name="expression"/>
+	/// from <see cref="DisplayAttribute"/> or <see cref="DescriptionAttribute"/>.
+	/// </summary>
+	/// <param name="expression">Property expression.</param>
+	public static string? DescriptionFor<T>(Expression<Func<T, object?>> expression)
+		=> DescriptionInternal(expression.Body);
+
+	static string LabelInternal(Expression expressionBody, bool edit = false)
 	{
-		var memberInfo = GetPropertyInformation(expression.Body) ?? throw new ArgumentException("No property reference expression was found", nameof(expression));
+		var memberInfo = GetPropertyInformation(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
 		string name = memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Name
 			?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
 			?? memberInfo.Name;
@@ -53,6 +72,14 @@ public static class ComponentHelper
 			))
 			name += "*";
 		return name;
+	}
+
+	static string? DescriptionInternal(Expression expressionBody)
+	{
+		var memberInfo = GetPropertyInformation(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
+		return memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Description
+			?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
+			?? null;
 	}
 
 	static MemberInfo? GetPropertyInformation(Expression expression)
