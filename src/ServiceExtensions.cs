@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using UniBlazor;
 using UniBlazor.Internal;
@@ -15,6 +16,16 @@ public static class UniBlazorServiceExtensions
 	public static IServiceCollection AddUniBrowserTime(this IServiceCollection services)
 	{
 		services.AddScoped<TimeProvider, BrowserTimeProvider>();
+		return services;
+	}
+
+	/// <summary>
+	/// Adds <see cref="CircuitServicesAccessor"/> that provides access to Blazor circuit services.
+	/// </summary>
+	public static IServiceCollection AddCircuitServicesAccessor(this IServiceCollection services)
+	{
+		services.AddScoped<CircuitServicesAccessor>();
+		services.AddScoped<CircuitHandler, CircuitServicesAccessorHandler>();
 		return services;
 	}
 
