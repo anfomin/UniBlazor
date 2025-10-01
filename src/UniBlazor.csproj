@@ -7,7 +7,7 @@
 		<Description>Common used helper methods.</Description>
 		<Authors>Alexander Fomin</Authors>
 		<RepositoryUrl>https://github.com/anfomin/uniblazor</RepositoryUrl>
-		<VersionPrefix>1.4.0</VersionPrefix>
+		<VersionPrefix>1.4.1</VersionPrefix>
 		<VersionSuffix Condition="'$(VERSION_SUFFIX)'!=''">$(VERSION_SUFFIX)</VersionSuffix>
 		<RootNamespace>UniBlazor</RootNamespace>
 		<TargetFramework>net9.0</TargetFramework>
@@ -22,7 +22,7 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 		<PackageReference Include="Microsoft.JSInterop" Version="9.0.*" />
-		<PackageReference Include="HelpersCore" Version="1.6.5" />
+		<PackageReference Include="HelpersCore" Version="1.6.*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -32,7 +32,7 @@
 
 	<PropertyGroup>
 		<PreBuildEvent>
-			npm exec -c 'esbuild $(MSBuildProjectDirectory)/wwwroot/*.ts $(MSBuildProjectDirectory)/Components/*.ts --outdir=$(MSBuildProjectDirectory) --minify --charset=utf8'
+			npx esbuild $(MSBuildProjectDirectory)/wwwroot/*.ts $(MSBuildProjectDirectory)/Components/*.ts --outdir=$(MSBuildProjectDirectory) --minify --charset=utf8
 		</PreBuildEvent>
 	</PropertyGroup>
 </Project>
