@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 
 namespace UniBlazor;
@@ -12,12 +13,35 @@ namespace UniBlazor;
 /// <item>Checks for parameter equality via <see cref="ComponentHelper.IsParametersEqual"/> if <see cref="DistinctParameters"/> is <see langword="true"/>.</item>
 /// </list>
 /// </summary>
-public class UniComponentBase : OwningComponentBase, IAsyncDisposable, IDisposable
+public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 {
 	readonly CancellationTokenSource _abortedSource = new();
 	CancellationToken? _abortedToken;
+	AsyncServiceScope? _scope;
 	IReadOnlyDictionary<string, object?>? _parametersPrev;
 	bool _parametersInitialized;
+
+	/// <summary>
+	/// Gets <see cref="IServiceScopeFactory"/> to create service provider scopes.
+	/// </summary>
+	[Inject]
+	protected IServiceScopeFactory ScopeFactory { get; set; } = default!;
+
+	/// <summary>
+	/// Gets the scoped <see cref="IServiceProvider"/> that is associated with this component.
+	/// </summary>
+	protected IServiceProvider ScopedServices
+	{
+		get
+		{
+			if (ScopeFactory == null)
+				throw new InvalidOperationException("Services cannot be accessed before the component is initialized.");
+
+			ObjectDisposedException.ThrowIf(IsDisposed, this);
+			_scope ??= ScopeFactory.CreateAsyncScope();
+			return _scope.Value.ServiceProvider;
+		}
+	}
 
 	/// <summary>
 	/// Gets the <see cref="NavigationManager"/> for navigation and URI manipulation.
@@ -27,8 +51,14 @@ public class UniComponentBase : OwningComponentBase, IAsyncDisposable, IDisposab
 
 	/// <summary>
 	/// Gets a cancellation token that is triggered when the component is disposed.
+	/// Token is cancelled before <see cref="ScopedServices"/> disposing.
 	/// </summary>
 	protected CancellationToken Aborted => _abortedToken ??= _abortedSource.Token;
+
+	/// <summary>
+	/// Gets a value determining if the component and associated services have been disposed.
+	/// </summary>
+	protected bool IsDisposed { get; private set; }
 
 	/// <summary>
 	/// Gets a value determining if the component has been rendered.
@@ -47,6 +77,29 @@ public class UniComponentBase : OwningComponentBase, IAsyncDisposable, IDisposab
 	protected virtual bool DistinctParameters => true;
 
 	/// <inheritdoc />
+	void IDisposable.Dispose()
+	{
+		if (!IsDisposed)
+		{
+			_abortedSource.Cancel();
+			_abortedSource.Dispose();
+			Dispose(disposing: true);
+			_scope?.Dispose();
+			_scope = null;
+			IsDisposed = true;
+		}
+	}
+
+	/// <summary>
+	/// This method is called when the component is disposed.
+	/// Invoked before the <see cref="Aborted"/> cancelled and <see cref="ScopedServices"/> are disposed.
+	/// </summary>
+	/// <param name="disposing">
+	/// <see langword="true"/> if called from <see cref="IDisposable.Dispose"/>;
+	/// </param>
+	protected virtual void Dispose(bool disposing) { }
+
+	/// <inheritdoc />
 	async ValueTask IAsyncDisposable.DisposeAsync()
 	{
 		if (!IsDisposed)
@@ -61,17 +114,6 @@ public class UniComponentBase : OwningComponentBase, IAsyncDisposable, IDisposab
 	/// </summary>
 	protected virtual ValueTask DisposeAsyncCore()
 		=> ValueTask.CompletedTask;
-
-	/// <inheritdoc />
-	protected override void Dispose(bool disposing)
-	{
-		base.Dispose(disposing);
-		if (disposing)
-		{
-			_abortedSource.Cancel();
-			_abortedSource.Dispose();
-		}
-	}
 
 	/// <summary>
 	/// Calls <see cref="ComponentBase.StateHasChanged"/> to notify the component that its state has changed.

@@ -14,7 +14,7 @@ namespace UniBlazor;
 /// </list>
 /// Provides navigation confirmation if <see cref="EditContext"/> is modified.
 /// </summary>
-public sealed partial class UniForm : ComponentBase, IAsyncDisposable
+public sealed partial class UniForm : UniComponentBase
 {
 	IJSObjectReference? _jsModule;
 	EditForm? _form;
@@ -114,15 +114,16 @@ public sealed partial class UniForm : ComponentBase, IAsyncDisposable
 	public static string? DefaultValidationClass { get; set; }
 
 	/// <inheritdoc />
-	protected override async Task OnAfterRenderAsync(bool firstRender)
+	protected override async Task InitializeJSAsync()
 	{
-		if (firstRender)
-			_jsModule = await JS.ImportAsync("/_content/UniBlazor/Components/UniForm.razor.js");
+		await base.InitializeJSAsync();
+		_jsModule = await JS.ImportAsync("/_content/UniBlazor/Components/UniForm.razor.js", Aborted);
 	}
 
 	/// <inheritdoc />
-	async ValueTask IAsyncDisposable.DisposeAsync()
+	protected override async ValueTask DisposeAsyncCore()
 	{
+		await base.DisposeAsyncCore();
 		if (_jsModule != null)
 			await _jsModule.DisposeAsyncSafe();
 	}
@@ -161,7 +162,7 @@ public sealed partial class UniForm : ComponentBase, IAsyncDisposable
 		{
 			try
 			{
-				await _jsModule.InvokeVoidAsync("scrollToFirstError", Id);
+				await _jsModule.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
 			}
 			catch (JSDisconnectedException) { }
 		}

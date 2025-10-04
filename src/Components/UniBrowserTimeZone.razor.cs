@@ -35,7 +35,7 @@ public sealed partial class UniBrowserTimeZone : ComponentBase
 			{
 				string timeZone = await JS.InvokeAsync<string>("UniBlazor.getTimeZone");
 				browserTimeProvider.SetBrowserTimeZone(timeZone);
-				Logger.LogDebug("Browser timezone set to {timeZone}", timeZone);
+				Logger.LogDebug("Browser timezone set to {TimeZone}", timeZone);
 			}
 			catch (JSDisconnectedException) { }
 		}
