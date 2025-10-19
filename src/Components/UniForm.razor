@@ -6,7 +6,7 @@
 <EditForm @ref="_form" Model="Model" OnSubmit="SubmitAsync"
 	id="@Id" class="@CssClass.Default(DefaultClass).Add(Class)" style="@Style">
 	<DataAnnotationsValidator />
-	<ValidationSummary Model="Model"
+	<ValidationSummary Model="!ValidationSummaryAll ? Model : null"
 		class="@CssClass.Default(DefaultValidationClass).Add(ValidationClass)"
 		style="@ValidationStyle" />
 	<CascadingValue Value="this" IsFixed>

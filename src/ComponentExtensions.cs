@@ -31,4 +31,11 @@ public static class ComponentExtensions
 			var output = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
 			return output.ToHtmlString();
 		});
+
+	/// <summary>
+	/// Creates a component builder for the specified component type.
+	/// </summary>
+	public static ComponentBuilder<TComponent> Build<TComponent>(this HtmlRenderer htmlRenderer)
+		where TComponent : IComponent
+		=> new(htmlRenderer);
 }

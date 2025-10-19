@@ -1,6 +1,10 @@
-@if (Value is {} value)
+@if (Value is { } value)
 {
 	@value.ToLocal(TimeProvider).ToString(Format ?? "g")
+}
+else if (Offset is { } offset)
+{
+	@offset.ToLocal(TimeProvider).ToString(Format ?? "g")
 }
 else if (Placeholder != "")
 {

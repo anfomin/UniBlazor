@@ -7,7 +7,7 @@
 		<Description>Common used helper methods.</Description>
 		<Authors>Alexander Fomin</Authors>
 		<RepositoryUrl>https://github.com/anfomin/uniblazor</RepositoryUrl>
-		<VersionPrefix>1.4.2</VersionPrefix>
+		<VersionPrefix>1.4.3</VersionPrefix>
 		<VersionSuffix Condition="'$(VERSION_SUFFIX)'!=''">$(VERSION_SUFFIX)</VersionSuffix>
 		<RootNamespace>UniBlazor</RootNamespace>
 		<TargetFramework>net9.0</TargetFramework>

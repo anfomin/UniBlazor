@@ -57,12 +57,21 @@ public sealed partial class UniForm : UniComponentBase
 	/// <summary>
 	/// Specifies CSS class for validation summary.
 	/// </summary>
+	[Parameter]
 	public string? ValidationClass { get; set; }
 
 	/// <summary>
 	/// Specifies CSS style for validation summary.
 	/// </summary>
+	[Parameter]
 	public string? ValidationStyle { get; set; }
+
+	/// <summary>
+	/// Specifies if validation summary should show messages for root-model only or for all properties too.
+	/// Default is <see langword="false"/>.
+	/// </summary>
+	[Parameter]
+	public bool ValidationSummaryAll { get; set; }
 
 	/// <summary>
 	/// Specifies the content to be rendered inside this <see cref="T:Microsoft.AspNetCore.Components.Forms.EditForm" />.

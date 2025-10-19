@@ -1,5 +1,5 @@
 <Solution>
-  <Folder Name="/Root/">
+  <Folder Name="/root/">
     <File Path=".gitignore" />
     <File Path="LICENSE" />
     <File Path="package.json" />

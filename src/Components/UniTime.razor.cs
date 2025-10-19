@@ -20,13 +20,19 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	public DateTime? Value { get; set; }
 
 	/// <summary>
+	/// Gets or sets datetime offset to display.
+	/// </summary>
+	[Parameter]
+	public DateTimeOffset? Offset { get; set; }
+
+	/// <summary>
 	/// Gets or sets datetime format string.
 	/// </summary>
 	[Parameter]
 	public string? Format { get; set; }
 
 	/// <summary>
-	/// Gets or sets placeholder text to display when <see cref="Value"/> is null.
+	/// Gets or sets placeholder text to display when <see cref="Value"/> and <see cref="Offset"/> are null.
 	/// If <c>null</c> then displays "—" (em dash).
 	/// If empty then displays nothing.
 	/// </summary>
