@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 namespace UniBlazor;
 
 /// <summary>
-/// Invokes JS script to get browser time zone and sets it to <see cref="BrowserTimeProvider"/>.
+/// Invokes JS script to get browser time zone and sets it to <see cref="UniTimeProvider"/>.
 /// </summary>
 public sealed partial class UniBrowserTimeZone : ComponentBase
 {
@@ -29,7 +29,7 @@ public sealed partial class UniBrowserTimeZone : ComponentBase
 	/// <inheritdoc />
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (firstRender && TimeProvider is BrowserTimeProvider { IsTimeZoneSet: false } browserTimeProvider)
+		if (firstRender && TimeProvider is UniTimeProvider { IsTimeZoneSet: false } browserTimeProvider)
 		{
 			try
 			{

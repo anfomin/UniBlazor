@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components.Server.Circuits;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using UniBlazor;
 using UniBlazor.Internal;
@@ -15,7 +16,8 @@ public static class UniBlazorServiceExtensions
 	/// </summary>
 	public static IServiceCollection AddUniBrowserTime(this IServiceCollection services)
 	{
-		services.AddScoped<TimeProvider, BrowserTimeProvider>();
+		services.AddHttpContextAccessor();
+		services.AddScoped<TimeProvider, UniTimeProvider>();
 		return services;
 	}
 

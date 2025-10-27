@@ -42,14 +42,14 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	/// <inheritdoc />
 	protected override void OnInitialized()
 	{
-		if (TimeProvider is BrowserTimeProvider browserTimeProvider)
+		if (TimeProvider is UniTimeProvider browserTimeProvider)
 			browserTimeProvider.LocalTimeZoneChanged += LocalTimeZoneChanged;
 	}
 
 	/// <inheritdoc />
 	public void Dispose()
 	{
-		if (TimeProvider is BrowserTimeProvider browserTimeProvider)
+		if (TimeProvider is UniTimeProvider browserTimeProvider)
 			browserTimeProvider.LocalTimeZoneChanged -= LocalTimeZoneChanged;
 	}
 
