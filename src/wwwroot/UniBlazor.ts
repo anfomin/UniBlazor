@@ -1,10 +1,7 @@
-declare var UniBlazor: any;
-declare type Browser = 'aol' | 'edge' | 'edge-ios' | 'yandexbrowser' | 'kakaotalk' | 'samsung' | 'silk' | 'miui' | 'beaker' | 'edge-chromium' | 'chrome' | 'chromium-webview' | 'phantomjs' | 'crios' | 'firefox' | 'fxios' | 'opera-mini' | 'opera' | 'pie' | 'netfront' | 'ie' | 'bb10' | 'android' | 'ios' | 'safari' | 'facebook' | 'instagram' | 'ios-webview' | 'curl' | 'searchbot';
-declare type BrowserList = {
-	[key in Browser]?: number | [number, number];
-}
+import type { BrowserList, DotNetStream } from 'uniblazor';
+
 const loadedScripts = new Map<string, Promise<void>>();
-window.UniBlazor = {
+(<any>window).UniBlazor = {
 	loadScript: function (src: string): Promise<void> {
 		let promise = loadedScripts.get(src);
 		if (!promise) {
@@ -39,7 +36,7 @@ window.UniBlazor = {
 		return false;
 	},
 
-	detectOldBrowserAndShowMessage: async function(opt?: { min?: BrowserList, text?: string }): Promise<void> {
+	detectOldBrowserAndShowMessage: async function(opt?: { min?: BrowserList, text?: string | null }): Promise<void> {
 		const min = opt && opt.min;
 		if (await this.detectOldBrowser(min)) {
 			const texts = {
@@ -62,7 +59,7 @@ window.UniBlazor = {
 		element.scrollIntoView({ behavior: behaviour, block: position });
 	},
 
-	downloadFile: async function (fileName: string, stream: DotNetStreamReference): Promise<void> {
+	downloadFile: async function (fileName: string, stream: DotNetStream): Promise<void> {
 		const buffer = await stream.arrayBuffer();
 		const blob = new Blob([buffer]);
 		const url = URL.createObjectURL(blob);
@@ -86,6 +83,7 @@ window.UniBlazor = {
 	}
 };
 
+// handle old browser
 const script =  document.currentScript;
 const attrBrowser = 'detect-old-browser';
 if (script?.hasAttribute(attrBrowser)) {
@@ -94,5 +92,10 @@ if (script?.hasAttribute(attrBrowser)) {
 	const text = script?.getAttribute('detect-old-browser-text');
 	UniBlazor.detectOldBrowserAndShowMessage({ min, text });
 }
+
+// disable Blazor scroll to top on navigation
 if (script?.hasAttribute('disable-scroll-to-top'))
-	window.scrollTo = () => { }; // disable Blazor scroll to top on navigation
+	window.scrollTo = () => { };
+
+// set timezone cookie
+document.cookie = `uni-timezone=${UniBlazor.getTimeZone()}; path=/; max-age=${60*60*24*365}; samesite=lax`;
