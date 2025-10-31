@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 namespace UniBlazor;
 
 /// <summary>
-/// Represents a JavaScript object reference that invokes <c>dispose()</c> method on dispose.
+/// Represents a JavaScript object reference that invokes JS <c>destroy()</c> method on dispose.
 /// </summary>
 /// <param name="jsRef">JavaScript object reference.</param>
 public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
@@ -36,7 +36,7 @@ public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
 	{
 		try
 		{
-			await JsRef.InvokeVoidAsync("dispose");
+			await JsRef.InvokeVoidAsync("destroy");
 		}
 		catch (JSDisconnectedException) { }
 		catch (OperationCanceledException) { }
