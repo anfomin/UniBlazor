@@ -13,7 +13,7 @@ public struct CssClass
 	/// Initializes a new instance of the <see cref="CssClass"/> with specified value.
 	/// </summary>
 	/// <param name="value">The initial CSS class value.</param>
-	public CssClass(string? value)
+	public CssClass(string? value = null)
 	{
 		Add(value);
 	}
