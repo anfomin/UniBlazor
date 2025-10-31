@@ -80,6 +80,12 @@ public sealed partial class UniForm : UniComponentBase
 	public RenderFragment? ChildContent { get; set; }
 
 	/// <summary>
+	/// A callback that will be invoked when the form's pending state changes.
+	/// </summary>
+	[Parameter]
+	public EventCallback<bool> OnPending { get; set; }
+
+	/// <summary>
 	/// A callback that will be invoked when the form is submitted and the EditContext is determined to be valid.
 	/// </summary>
 	[Parameter]
@@ -108,6 +114,11 @@ public sealed partial class UniForm : UniComponentBase
 	public EditContext? EditContext => _form?.EditContext;
 
 	/// <summary>
+	/// Gets form <see cref="PendingContext"/>.
+	/// </summary>
+	public PendingContext PendingContext { get; } = new();
+
+	/// <summary>
 	/// Gets if form should confirm navigation.
 	/// </summary>
 	public bool ShouldConfirmNavigation => ConfirmNavigation && Model != null && _form?.EditContext?.IsModified() == true;
@@ -121,6 +132,22 @@ public sealed partial class UniForm : UniComponentBase
 	/// Specifies default CSS style for every <see cref="UniForm"/> validation summary.
 	/// </summary>
 	public static string? DefaultValidationClass { get; set; }
+
+	/// <summary>
+	/// Initializes a new <see cref="UniForm"/> instance.
+	/// </summary>
+	public UniForm()
+	{
+		PendingContext.OnPendingChanged += OnPendingChanged;
+	}
+
+	/// <inheritdoc />
+	protected override void Dispose(bool disposing)
+	{
+		base.Dispose(disposing);
+		if (disposing)
+			PendingContext.OnPendingChanged -= OnPendingChanged;
+	}
 
 	/// <inheritdoc />
 	protected override async Task InitializeJSAsync()
@@ -175,6 +202,11 @@ public sealed partial class UniForm : UniComponentBase
 			}
 			catch (JSDisconnectedException) { }
 		}
+	}
+
+	void OnPendingChanged(object? sender, PendingChangedEventArgs e)
+	{
+		OnPending.InvokeAsync(e.IsPending);
 	}
 
 	async Task OnBeforeNavigationAsync(LocationChangingContext context)

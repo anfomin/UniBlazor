@@ -10,7 +10,9 @@
 		class="@CssClass.Default(DefaultValidationClass).Add(ValidationClass)"
 		style="@ValidationStyle" />
 	<CascadingValue Value="this" IsFixed>
-		@ChildContent
+		<CascadingValue Value="PendingContext" IsFixed>
+			@ChildContent
+		</CascadingValue>
 	</CascadingValue>
 	<button type="submit" hidden></button>
 </EditForm>
