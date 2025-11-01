@@ -9,7 +9,7 @@ declare global {
 /**
  * Provides methods for invoking .NET methods from JavaScript.
  */
-interface DotNet {
+export interface DotNet {
 	/**
 	 * Invokes the specified .NET method synchronously. Recomended to use `invokeMethodAsync` instead.
 	 * @param assemblyName The short name (without key/version or .dll extension) of the .NET assembly containing the method.
@@ -80,7 +80,7 @@ export interface DotNetObject {
 /**
  * Represents the .NET stream passed by reference to JavaScript.
  */
-interface DotNetStream {
+export interface DotNetStream {
 	/**
 	 * Provides stream data.
 	 * @returns A promise representing stream `ArrayBuffer`.
@@ -91,4 +91,4 @@ interface DotNetStream {
 /**
  * Represents the JavaScript object reference.
  */
-interface JsObjectReference { }
+export interface JsObjectReference { }

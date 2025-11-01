@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using UniBlazor;
 using UniBlazor.Internal;
@@ -12,12 +11,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class UniBlazorServiceExtensions
 {
 	/// <summary>
-	/// Registers browser time provider as the default time provider.
+	/// Registers <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
 	/// </summary>
 	public static IServiceCollection AddUniBrowserTime(this IServiceCollection services)
 	{
 		services.AddHttpContextAccessor();
 		services.AddScoped<TimeProvider, UniTimeProvider>();
+		services.AddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
 		return services;
 	}
 

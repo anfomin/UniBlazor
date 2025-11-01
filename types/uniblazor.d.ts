@@ -1,5 +1,3 @@
-import { DotNetStream } from './blazor';
-
 declare global {
 	const UniBlazor: UniBlazor;
 
@@ -11,7 +9,7 @@ declare global {
 /**
  * Provides UniBlazor methods.
  */
-interface UniBlazor {
+export interface UniBlazor {
 	/**
 	 * Loads JavaScript file. Resolves immediatelly if already loaded.
 	 * @param src The script URL.
@@ -34,34 +32,14 @@ interface UniBlazor {
 	detectOldBrowserAndShowMessage(opt?: { min?: BrowserList, text?: string | null }): Promise<void>;
 
 	/**
-	 * Gets the user's time zone.
-	 */
-	getTimeZone(): string;
-
-	/**
-	 * Scrolls the element into view.
-	 * @param element The element to scroll into view.
-	 * @param behaviour Scroll behaviour. Default 'auto'.
-	 * @param position Scroll position. Default 'start'.
-	 */
-	scrollIntoView(element: HTMLElement, behaviour?: ScrollBehavior, position?: ScrollLogicalPosition): void;
-
-	/**
-	 * Downloads file from the .NET stream into browser.
-	 * @param fileName File save name.
-	 * @param stream The .NET stream.
-	 */
-	downloadFile(fileName: string, stream: DotNetStream): Promise<void>;
-
-	/**
 	 * Generates a UUID string.
 	 * @param plain If `true`, generates UUID without dashes. Default is `false`.
 	 */
 	uuid(plain?: boolean): string;
 }
 
-type Browser = 'aol' | 'edge' | 'edge-ios' | 'yandexbrowser' | 'kakaotalk' | 'samsung' | 'silk' | 'miui' | 'beaker' | 'edge-chromium' | 'chrome' | 'chromium-webview' | 'phantomjs' | 'crios' | 'firefox' | 'fxios' | 'opera-mini' | 'opera' | 'pie' | 'netfront' | 'ie' | 'bb10' | 'android' | 'ios' | 'safari' | 'facebook' | 'instagram' | 'ios-webview' | 'curl' | 'searchbot';
+export type Browser = 'aol' | 'edge' | 'edge-ios' | 'yandexbrowser' | 'kakaotalk' | 'samsung' | 'silk' | 'miui' | 'beaker' | 'edge-chromium' | 'chrome' | 'chromium-webview' | 'phantomjs' | 'crios' | 'firefox' | 'fxios' | 'opera-mini' | 'opera' | 'pie' | 'netfront' | 'ie' | 'bb10' | 'android' | 'ios' | 'safari' | 'facebook' | 'instagram' | 'ios-webview' | 'curl' | 'searchbot';
 
-type BrowserList = {
+export type BrowserList = {
 	[key in Browser]?: number | [number, number];
 }

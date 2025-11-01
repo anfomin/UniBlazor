@@ -16,7 +16,7 @@ namespace UniBlazor;
 /// </summary>
 public sealed partial class UniForm : UniComponentBase
 {
-	IJSObjectReference? _jsModule;
+	IJSObjectReference? _jsInternal;
 	EditForm? _form;
 
 	/// <summary>
@@ -153,15 +153,15 @@ public sealed partial class UniForm : UniComponentBase
 	protected override async Task InitializeJSAsync()
 	{
 		await base.InitializeJSAsync();
-		_jsModule = await JS.ImportAsync("/_content/UniBlazor/Components/UniForm.razor.js", Aborted);
+		_jsInternal = await JS.ImportInternalModuleAsync(Aborted);
 	}
 
 	/// <inheritdoc />
 	protected override async ValueTask DisposeAsyncCore()
 	{
 		await base.DisposeAsyncCore();
-		if (_jsModule != null)
-			await _jsModule.DisposeAsyncSafe();
+		if (_jsInternal != null)
+			await _jsInternal.DisposeAsyncSafe();
 	}
 
 	/// <summary>
@@ -194,11 +194,11 @@ public sealed partial class UniForm : UniComponentBase
 		foreach (string message in context.GetValidationMessages())
 			Logger.LogDebug(message);
 
-		if (_jsModule != null)
+		if (_jsInternal != null)
 		{
 			try
 			{
-				await _jsModule.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
+				await _jsInternal.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
 			}
 			catch (JSDisconnectedException) { }
 		}

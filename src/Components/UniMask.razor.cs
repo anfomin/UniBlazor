@@ -29,7 +29,7 @@ public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 		{
 			try
 			{
-				await using var module = await JS.ImportAsync("/_content/UniBlazor/Components/UniMask.razor.js");
+				await using var module = await JS.ImportAsync("/_content/UniBlazor/UniMask.js");
 				_jsMask = new(await module.InvokeAsync<IJSObjectReference>("create"));
 			}
 			catch (JSDisconnectedException) { }

@@ -15,10 +15,11 @@ public static class ElementReferenceExtensions
 	/// <param name="elementReference">Element to scroll to.</param>
 	/// <param name="behavior">Scroll behaviour. Default smooth.</param>
 	/// <param name="position">Scroll block position. Default start.</param>
-	public static ValueTask ScrollIntoViewAsync(this ElementReference elementReference, ScrollBehavior behavior = ScrollBehavior.Smooth, ScrollPosition position = ScrollPosition.Start)
+	public static async ValueTask ScrollIntoViewAsync(this ElementReference elementReference, ScrollBehavior behavior = ScrollBehavior.Smooth, ScrollPosition position = ScrollPosition.Start, CancellationToken cancellationToken = default)
 	{
 		var js = elementReference.GetJsRuntime();
-		return js.InvokeVoidAsync("UniBlazor.scrollIntoView", elementReference, behavior.ToString().ToLower(), position.ToString().ToLower());
+		await using var internalModule = await js.ImportInternalModuleAsync(cancellationToken);
+		await internalModule.InvokeVoidAsync("scrollIntoView", cancellationToken, elementReference, behavior.ToString().ToLower(), position.ToString().ToLower());
 	}
 
 	internal static IJSRuntime GetJsRuntime(this ElementReference elementReference)

@@ -51,30 +51,6 @@ const loadedScripts = new Map<string, Promise<void>>();
 		}
 	},
 
-	getTimeZone: function(): string {
-		return Intl.DateTimeFormat().resolvedOptions().timeZone;
-	},
-
-	scrollIntoView: function (element: HTMLElement, behaviour: ScrollBehavior = 'auto', position: ScrollLogicalPosition = 'start'): void {
-		element.scrollIntoView({ behavior: behaviour, block: position });
-	},
-
-	downloadFile: async function (fileName: string, stream: DotNetStream): Promise<void> {
-		const buffer = await stream.arrayBuffer();
-		const blob = new Blob([buffer]);
-		const url = URL.createObjectURL(blob);
-		try {
-			const anchor = document.createElement('a');
-			anchor.href = url;
-			anchor.download = fileName ?? '';
-			anchor.click();
-			anchor.remove();
-		}
-		finally {
-			URL.revokeObjectURL(url);
-		}
-	},
-
 	uuid: function uuid(plain = false): string {
 		const res: string = (<any>[1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
 			(c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
@@ -96,6 +72,3 @@ if (script?.hasAttribute(attrBrowser)) {
 // disable Blazor scroll to top on navigation
 if (script?.hasAttribute('disable-scroll-to-top'))
 	window.scrollTo = () => { };
-
-// set timezone cookie
-document.cookie = `uni-timezone=${UniBlazor.getTimeZone()}; path=/; max-age=${60*60*24*365}; samesite=lax`;
