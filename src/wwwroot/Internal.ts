@@ -2,8 +2,32 @@ import type { DotNetStream } from 'uniblazor';
 
 export function initTimeZone(): string {
 	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	document.cookie = `uni-timezone=${timezone}; path=/; max-age=${60*60*24*365}; samesite=lax`;
+	setCookie('uni-timezone', timezone, { maxAge: 60*60*24*365, sameSite: 'lax' });
 	return timezone;
+}
+
+export function setCookie(key: string, value: string, opt?: {
+	domain?: string;
+	path?: string;
+	expires?: string;
+	maxAge?: number;
+	sameSite?: 'lax' | 'strict' | 'none';
+	secure?: boolean;
+}): void {
+	let cookie = `${key}=${value}`;
+	if (opt?.domain)
+		cookie += `;domain=${opt.domain}`;
+	if (opt?.path)
+		cookie += `;path=${opt.path}`;
+	if (opt?.expires)
+		cookie += `;expires=${opt.expires}`;
+	if (opt?.maxAge != null)
+		cookie += `;max-age=${opt.maxAge}`;
+	if (opt?.sameSite)
+		cookie += `;samesite=${opt.sameSite}`;
+	if (opt?.secure)
+		cookie += `;secure`;
+	document.cookie = cookie;
 }
 
 export function scrollIntoView(element: HTMLElement, behaviour: ScrollBehavior = 'auto', position: ScrollLogicalPosition = 'start'): void {

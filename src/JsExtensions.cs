@@ -1,3 +1,5 @@
+using System.Globalization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 
 namespace UniBlazor;
@@ -31,6 +33,37 @@ public static class JsExtensions
 		}
 		catch (JSDisconnectedException) { }
 		catch (OperationCanceledException) { }
+	}
+
+	/// <summary>
+	/// Gets cookie value by key.
+	/// </summary>
+	/// <param name="key">Cookie key.</param>
+	/// <param name="value">Cookie value.</param>
+	public static async ValueTask SetCookieAsync(this IJSRuntime js, string key, string value, CancellationToken cancellationToken = default)
+	{
+		await using var internalModule = await js.ImportInternalModuleAsync(cancellationToken);
+		await internalModule.InvokeVoidAsync("setCookie", cancellationToken, key, value);
+	}
+
+	/// <summary>
+	/// Sets cookie value by key with options.
+	/// </summary>
+	/// <param name="key">Cookie key.</param>
+	/// <param name="value">Cookie value.</param>
+	/// <param name="options">Cookie options.</param>
+	public static async ValueTask SetCookieAsync(this IJSRuntime js, string key, string value, CookieOptions options, CancellationToken cancellationToken = default)
+	{
+		await using var internalModule = await js.ImportInternalModuleAsync(cancellationToken);
+		await internalModule.InvokeVoidAsync("setCookie", cancellationToken, key, value, new
+		{
+			options.Domain,
+			options.Path,
+			Expires = options.Expires?.ToString("r"),
+			MaxAge = (int?)options.MaxAge?.TotalSeconds,
+			SameSite = options.SameSite == SameSiteMode.Unspecified ? null : options.SameSite.ToString().ToLower(),
+			options.Secure
+		});
 	}
 
 	/// <summary>
