@@ -7,6 +7,6 @@
 		"type": "git",
 		"url": "https://github.com/anfomin/uniblazor.git"
 	},
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"types": "./index.d.ts"
 }

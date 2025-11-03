@@ -11,6 +11,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class UniBlazorServiceExtensions
 {
 	/// <summary>
+	/// Registers browser <see cref="ILocalStorage"/> and <see cref="ISessionStorage"/>.
+	/// </summary>
+	public static IServiceCollection AddUniBrowserStorage(this IServiceCollection services)
+	{
+		services.AddScoped<ILocalStorage, BrowserLocalStorage>();
+		services.AddScoped<ISessionStorage, BrowserSessionStorage>();
+		return services;
+	}
+
+	/// <summary>
 	/// Registers <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
 	/// </summary>
 	public static IServiceCollection AddUniBrowserTime(this IServiceCollection services)
