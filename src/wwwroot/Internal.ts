@@ -14,11 +14,9 @@ export function setCookie(key: string, value: string, opt?: {
 	sameSite?: 'lax' | 'strict' | 'none';
 	secure?: boolean;
 }): void {
-	let cookie = `${key}=${value}`;
+	let cookie = `${key}=${value};path=${opt?.path || '/'}`;
 	if (opt?.domain)
 		cookie += `;domain=${opt.domain}`;
-	if (opt?.path)
-		cookie += `;path=${opt.path}`;
 	if (opt?.expires)
 		cookie += `;expires=${opt.expires}`;
 	if (opt?.maxAge != null)
