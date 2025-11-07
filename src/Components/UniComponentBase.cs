@@ -76,7 +76,6 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	/// </summary>
 	protected virtual bool DistinctParameters => true;
 
-	/// <inheritdoc />
 	void IDisposable.Dispose()
 	{
 		if (!IsDisposed)
@@ -99,7 +98,6 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	/// </param>
 	protected virtual void Dispose(bool disposing) { }
 
-	/// <inheritdoc />
 	async ValueTask IAsyncDisposable.DisposeAsync()
 	{
 		if (!IsDisposed)
@@ -124,7 +122,6 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 		StateHasChanged();
 	}
 
-	/// <inheritdoc />
 	public override async Task SetParametersAsync(ParameterView parameters)
 	{
 		if (DistinctParameters)
@@ -139,7 +136,6 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 		_parametersInitialized = true;
 	}
 
-	/// <inheritdoc />
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		await base.OnAfterRenderAsync(firstRender);

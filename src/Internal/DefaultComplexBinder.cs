@@ -110,7 +110,6 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 		return true;
 	}
 
-	/// <inheritdoc />
 	public object Create(Type type, Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>>? queryString)
 	{
 		var obj = ActivatorUtilities.CreateInstance(_serviceProvider, type);
@@ -119,7 +118,6 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 		return obj;
 	}
 
-	/// <inheritdoc />
 	public void Bind(object obj, Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>> queryString)
 	{
 		foreach (var prop in obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.SetProperty))

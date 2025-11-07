@@ -14,7 +14,6 @@ public readonly record struct DataRequest<T>(
 	DataSort? Sort,
 	CancellationToken CancellationToken
 ) {
-	/// <inheritdoc />
 	public override string ToString()
 		=> $"Request from {StartIndex}, count {Count}, sort {Sort}";
 }

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Components;
 namespace UniBlazor;
 
 /// <summary>
-/// Displays datetime in user's local time zone.
+/// Displays <see cref="DateTime"/> or <see cref="DateTimeOffset"/> in the specified
+/// <see cref="TimeZone"/> or user's local time zone from <see cref="TimeProvider"/>.
 /// </summary>
 public sealed partial class UniTime : ComponentBase, IDisposable
 {
@@ -14,16 +15,23 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	TimeProvider TimeProvider { get; set; } = null!;
 
 	/// <summary>
-	/// Gets or sets datetime to display.
+	/// Gets or sets <see cref="DateTime"/> to display.
 	/// </summary>
 	[Parameter]
 	public DateTime? Value { get; set; }
 
 	/// <summary>
-	/// Gets or sets datetime offset to display.
+	/// Gets or sets <see cref="DateTimeOffset"/> to display.
 	/// </summary>
 	[Parameter]
 	public DateTimeOffset? Offset { get; set; }
+
+	/// <summary>
+	/// Gets or sets time zone to display <see cref="Value"/> or <see cref="Offset"/> in.
+	/// If null then uses user's local time zone from <see cref="TimeProvider"/>.
+	/// </summary>
+	[Parameter]
+	public TimeZoneInfo? TimeZone { get; set; }
 
 	/// <summary>
 	/// Gets or sets datetime format string.
@@ -39,14 +47,12 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	[Parameter]
 	public string? Placeholder { get; set; }
 
-	/// <inheritdoc />
 	protected override void OnInitialized()
 	{
 		if (TimeProvider is UniTimeProvider browserTimeProvider)
 			browserTimeProvider.LocalTimeZoneChanged += LocalTimeZoneChanged;
 	}
 
-	/// <inheritdoc />
 	public void Dispose()
 	{
 		if (TimeProvider is UniTimeProvider browserTimeProvider)
@@ -54,5 +60,8 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	}
 
 	void LocalTimeZoneChanged(object? sender, TimeZoneInfo e)
-		=> StateHasChanged();
+	{
+		if (TimeZone == null)
+			StateHasChanged();
+	}
 }

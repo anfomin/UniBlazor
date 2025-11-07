@@ -11,7 +11,6 @@ public readonly record struct DataSort(string Key, bool Descending = false) : IP
 {
 	const char Delimiter = '-';
 
-	/// <inheritdoc />
 	public override string ToString()
 		=> Descending ? $"{Key}{Delimiter}desc" : Key;
 
@@ -37,7 +36,6 @@ public readonly record struct DataSort(string Key, bool Descending = false) : IP
 	public static DataSort Parse(string s)
 		=> Parse(s.AsSpan());
 
-	/// <inheritdoc />
 	static DataSort IParsable<DataSort>.Parse(string s, IFormatProvider? provider)
 		=> Parse(s.AsSpan());
 
@@ -75,7 +73,6 @@ public readonly record struct DataSort(string Key, bool Descending = false) : IP
 		return true;
 	}
 
-	/// <inheritdoc />
 	static bool IParsable<DataSort>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out DataSort result)
 		=> TryParse(s, out result);
 }

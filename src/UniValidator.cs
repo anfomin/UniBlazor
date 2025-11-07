@@ -25,7 +25,6 @@ public class UniValidator : ComponentBase, IDisposable
 	[CascadingParameter]
 	EditContext? EditContext { get; set; }
 
-	/// <inheritdoc />
 	protected override void OnInitialized()
 	{
 		if (EditContext == null)
@@ -47,7 +46,6 @@ public class UniValidator : ComponentBase, IDisposable
 		}
 	}
 
-	/// <inheritdoc />
 	public void Dispose()
 	{
 		if (EditContext != null)

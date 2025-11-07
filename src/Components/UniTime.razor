@@ -1,10 +1,10 @@
 @if (Value is { } value)
 {
-	@value.ToLocal(TimeProvider).ToString(Format ?? "g")
+	@value.ToTimeZone(TimeZone ?? TimeProvider.LocalTimeZone).ToString(Format ?? "g")
 }
 else if (Offset is { } offset)
 {
-	@offset.ToLocal(TimeProvider).ToString(Format ?? "g")
+	@offset.ToTimeZone(TimeZone ?? TimeProvider.LocalTimeZone).ToString(Format ?? "g")
 }
 else if (Placeholder != "")
 {

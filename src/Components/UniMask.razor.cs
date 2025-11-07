@@ -22,7 +22,6 @@ public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 	[Inject]
 	IJSRuntime JS { get; set; } = null!;
 
-	/// <inheritdoc />
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
@@ -37,7 +36,6 @@ public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 		}
 	}
 
-	/// <inheritdoc />
 	async ValueTask IAsyncDisposable.DisposeAsync()
 	{
 		if (_jsMask != null)

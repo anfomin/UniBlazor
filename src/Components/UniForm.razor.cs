@@ -141,7 +141,6 @@ public sealed partial class UniForm : UniComponentBase
 		PendingContext.OnPendingChanged += OnPendingChanged;
 	}
 
-	/// <inheritdoc />
 	protected override void Dispose(bool disposing)
 	{
 		base.Dispose(disposing);
@@ -149,14 +148,12 @@ public sealed partial class UniForm : UniComponentBase
 			PendingContext.OnPendingChanged -= OnPendingChanged;
 	}
 
-	/// <inheritdoc />
 	protected override async Task InitializeJSAsync()
 	{
 		await base.InitializeJSAsync();
 		_jsInternal = await JS.ImportInternalModuleAsync(Aborted);
 	}
 
-	/// <inheritdoc />
 	protected override async ValueTask DisposeAsyncCore()
 	{
 		await base.DisposeAsyncCore();

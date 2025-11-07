@@ -18,7 +18,6 @@ public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
 	/// </summary>
 	protected bool IsDisposed { get; private set; }
 
-	/// <inheritdoc />
 	public async ValueTask DisposeAsync()
 	{
 		if (!IsDisposed)
