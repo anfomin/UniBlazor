@@ -1,0 +1,15 @@
+@inherits UniComponentBase
+
+<audio @ref="_audioRef"
+	src="@Src"
+	autoplay="@AutoPlay"
+	loop="@Loop"
+	controls="@Controls"
+	preload="@Preload.ToString().ToLower()"
+	@onloadstart="() => SetStatusAsync(AudioStatus.Loading)"
+	@onplay="() => SetStatusAsync(AudioStatus.Playing)"
+	@onpause="() => SetStatusAsync(AudioStatus.Paused)"
+	@onended="() => SetStatusAsync(AudioStatus.Stopped)"
+	@onerror="() => SetStatusAsync(AudioStatus.Error)">
+	@ChildContent
+</audio>

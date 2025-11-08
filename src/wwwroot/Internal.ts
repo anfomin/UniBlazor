@@ -32,6 +32,10 @@ export function scrollIntoView(element: HTMLElement, behaviour: ScrollBehavior =
 	element.scrollIntoView({ behavior: behaviour, block: position });
 }
 
+export function invokeElement(element: HTMLElement, method: string): any {
+	return element[method]();
+}
+
 export async function scrollToFirstError(formId: string): Promise<boolean> {
 	const form = document.getElementById(formId);
 	if (!form)
