@@ -8,7 +8,7 @@ namespace UniBlazor;
 /// </summary>
 public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 {
-	JsObject? _jsMask;
+	JSObject? _jsMask;
 
 	/// <summary>
 	/// Gets logger.

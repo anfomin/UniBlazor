@@ -3,10 +3,10 @@ using Microsoft.JSInterop;
 namespace UniBlazor;
 
 /// <summary>
-/// Represents a JavaScript object reference that invokes JS <c>destroy()</c> method on dispose.
+/// Represents object holding <see cref="IJSObjectReference"/> and safely disposing it.
 /// </summary>
 /// <param name="jsRef">JavaScript object reference.</param>
-public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
+public class JSObject(IJSObjectReference jsRef) : IAsyncDisposable
 {
 	/// <summary>
 	/// Gets the JavaScript object reference.
@@ -33,15 +33,6 @@ public class JsObject(IJSObjectReference jsRef) : IAsyncDisposable
 	/// </summary>
 	protected virtual async ValueTask DisposeAsyncCore()
 	{
-		try
-		{
-			await JsRef.InvokeVoidAsync("destroy");
-		}
-		catch (JSDisconnectedException) { }
-		catch (OperationCanceledException) { }
-		finally
-		{
-			await JsRef.DisposeAsyncSafe();
-		}
+		await JsRef.DisposeAsyncSafe();
 	}
 }

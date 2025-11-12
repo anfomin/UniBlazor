@@ -32,7 +32,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 	string? _lastUri;
 	readonly Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>> _queryValues = new(ReadOnlyMemoryCharComparer.OrdinalIgnoreCase);
 
-	public bool IsFixed { get; } = false;
+	public bool IsFixed => false;
 
 	public void Dispose()
 		=> UnsubscribeFromLocationChanges();
@@ -40,7 +40,11 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 	public bool CanSupplyValue(in CascadingParameterInfo parameterInfo)
 		=> parameterInfo.Attribute is SupplyComplexFromQueryAttribute;
 
+#if NET10_0_OR_GREATER
+	public object? GetCurrentValue(object? key, in CascadingParameterInfo parameterInfo)
+#else
 	public object? GetCurrentValue(in CascadingParameterInfo parameterInfo)
+#endif
 	{
 		if (TryUpdateUri(_navigation.Uri))
 			UpdateValues();
@@ -147,7 +151,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 
 /// <summary>
 /// Proxy for <see cref="SupplyComplexFromQueryProvider"/> that implements <see cref="ICascadingValueSupplier"/>.
-/// Required because ICascadingValueSupplier is internal.
+/// Required because <see cref="ICascadingValueSupplier"/> is internal.
 /// </summary>
 public class SupplyComplexFromQueryProviderProxy : DispatchProxy
 {
@@ -156,6 +160,7 @@ public class SupplyComplexFromQueryProviderProxy : DispatchProxy
 	protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
 		=> _implementation.GetType().GetMethod(targetMethod!.Name, BindingFlags.Instance | BindingFlags.Public)!.Invoke(_implementation, args);
 
+	// ReSharper disable once InconsistentNaming
 	public static Type ICascadingValueSupplierType { get; }
 		= typeof(IComponent).Assembly.GetType("Microsoft.AspNetCore.Components.ICascadingValueSupplier")!;
 

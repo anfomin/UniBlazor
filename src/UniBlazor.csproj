@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor" InitialTargets="TypescriptBuild">
 	<PropertyGroup>
 		<AssemblyName>UniBlazor</AssemblyName>
 		<PackageId>UniBlazor</PackageId>
@@ -7,10 +7,10 @@
 		<Description>Common used helper methods.</Description>
 		<Authors>Alexander Fomin</Authors>
 		<RepositoryUrl>https://github.com/anfomin/uniblazor</RepositoryUrl>
-		<VersionPrefix>1.7.0</VersionPrefix>
+		<VersionPrefix>1.8.0</VersionPrefix>
 		<VersionSuffix Condition="'$(VERSION_SUFFIX)'!=''">$(VERSION_SUFFIX)</VersionSuffix>
 		<RootNamespace>UniBlazor</RootNamespace>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFrameworks>net9.0;net10.0</TargetFrameworks>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -21,8 +21,7 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		<PackageReference Include="Microsoft.JSInterop" Version="9.0.*" />
-		<PackageReference Include="HelpersCore" Version="1.7.*" />
+		<PackageReference Include="HelpersCore" Version="1.8.*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -34,9 +33,7 @@
 	  <Content Update="wwwroot/*.ts" CopyToPublishDirectory="Never" />
 	</ItemGroup>
 
-	<PropertyGroup>
-		<PreBuildEvent>
-			npx esbuild $(MSBuildProjectDirectory)/wwwroot/*.ts --outdir=$(MSBuildProjectDirectory)/wwwroot --minify --charset=utf8
-		</PreBuildEvent>
-	</PropertyGroup>
+	<Target Name="TypescriptBuild" BeforeTargets="PreBuildEvent">
+		<Exec Command="npx esbuild $(MSBuildProjectDirectory)/wwwroot/*.ts --outdir=$(MSBuildProjectDirectory)/wwwroot --minify --charset=utf8" />
+	</Target>
 </Project>
