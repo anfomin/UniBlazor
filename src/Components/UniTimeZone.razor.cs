@@ -11,7 +11,7 @@ public sealed partial class UniTimeZone : ComponentBase, IDisposable
 	/// Gets user time provider.
 	/// </summary>
 	[Inject]
-	IUserTimeProvider TimeProvider { get; set; } = null!;
+	ITimeProvider TimeProvider { get; set; } = null!;
 
 	protected override void OnInitialized()
 	{

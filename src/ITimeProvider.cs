@@ -1,12 +1,13 @@
 namespace UniBlazor;
 
 /// <summary>
-/// Provides an abstraction for user time.
+/// Provides an abstraction for time.
 /// </summary>
-public interface IUserTimeProvider
+public interface ITimeProvider
 {
 	/// <summary>
-	/// Gets a <see cref="TimeZoneInfo" /> object that represents user time zone.
+	/// Gets a <see cref="TimeZoneInfo" /> object that represents the local time zone
+	/// according to this <see cref="ITimeProvider" />'s notion of time.
 	/// </summary>
 	TimeZoneInfo LocalTimeZone { get; }
 
@@ -22,9 +23,9 @@ public interface IUserTimeProvider
 	DateTimeOffset GetUtcNow();
 
 	/// <summary>
-	/// Gets a <see cref="DateTimeOffset" /> value that is set to the user date and time according
-	/// to this <see cref="IUserTimeProvider" />'s notion of time based on <see cref="GetUtcNow" />,
-	/// with the offset set to the <see cref="LocalTimeZone" />'s offset from Coordinated Universal Time (UTC).
+	/// Gets a <see cref="DateTimeOffset" /> value that is set to the current date and time according to
+	/// this <see cref="ITimeProvider" />'s notion of time based on <see cref="GetUtcNow" />, with the
+	/// offset set to the <see cref="LocalTimeZone" />'s offset from Coordinated Universal Time (UTC).
 	/// </summary>
 	DateTimeOffset GetLocalNow();
 }

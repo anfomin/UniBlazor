@@ -12,7 +12,7 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 	/// Gets user time provider.
 	/// </summary>
 	[Inject]
-	IUserTimeProvider TimeProvider { get; set; } = null!;
+	ITimeProvider TimeProvider { get; set; } = null!;
 
 	/// <summary>
 	/// Gets or sets <see cref="DateTime"/> to display.

@@ -6,7 +6,7 @@ namespace UniBlazor;
 /// Provides the current time in the browser's local time zone.
 /// Timezone is determined from cookie or set from browser via JS interop.
 /// </summary>
-public sealed class UniTimeProvider : TimeProvider, IUserTimeProvider
+public sealed class UniTimeProvider : TimeProvider, ITimeProvider
 {
 	const string CookieName = "uni-timezone";
 	readonly ILogger _logger;
