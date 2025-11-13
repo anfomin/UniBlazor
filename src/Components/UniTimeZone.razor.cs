@@ -8,24 +8,22 @@ namespace UniBlazor;
 public sealed partial class UniTimeZone : ComponentBase, IDisposable
 {
 	/// <summary>
-	/// Gets time provider.
+	/// Gets user time provider.
 	/// </summary>
 	[Inject]
-	TimeProvider TimeProvider { get; set; } = null!;
+	IUserTimeProvider TimeProvider { get; set; } = null!;
 
 	protected override void OnInitialized()
 	{
-		if (TimeProvider is UniTimeProvider browserTimeProvider)
-			browserTimeProvider.LocalTimeZoneChanged += LocalTimeZoneChanged;
+		TimeProvider.TimeZoneChanged += TimeZoneChanged;
 	}
 
 	public void Dispose()
 	{
-		if (TimeProvider is UniTimeProvider browserTimeProvider)
-			browserTimeProvider.LocalTimeZoneChanged -= LocalTimeZoneChanged;
+		TimeProvider.TimeZoneChanged -= TimeZoneChanged;
 	}
 
-	void LocalTimeZoneChanged(object? sender, TimeZoneInfo e)
+	void TimeZoneChanged(object? sender, TimeZoneInfo e)
 	{
 		StateHasChanged();
 	}

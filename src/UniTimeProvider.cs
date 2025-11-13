@@ -6,7 +6,7 @@ namespace UniBlazor;
 /// Provides the current time in the browser's local time zone.
 /// Timezone is determined from cookie or set from browser via JS interop.
 /// </summary>
-public sealed class UniTimeProvider : TimeProvider
+public sealed class UniTimeProvider : TimeProvider, IUserTimeProvider
 {
 	const string CookieName = "uni-timezone";
 	readonly ILogger _logger;
@@ -18,12 +18,8 @@ public sealed class UniTimeProvider : TimeProvider
 	/// </summary>
 	public bool IsTimeZoneSet => _browserTimeZone != null;
 
-	/// <summary>
-	/// Fires event when the browser's time zone has changed.
-	/// </summary>
-	public event EventHandler<TimeZoneInfo>? LocalTimeZoneChanged;
+	public event EventHandler<TimeZoneInfo>? TimeZoneChanged;
 
-	/// <inheritdoc />
 	public override TimeZoneInfo LocalTimeZone
 		=> _browserTimeZone ?? _cookieTimeZone ?? base.LocalTimeZone;
 
@@ -54,7 +50,7 @@ public sealed class UniTimeProvider : TimeProvider
 		{
 			_logger.LogDebug("Timezone set from browser to {TimeZone}", timeZoneId);
 			_browserTimeZone = timeZone;
-			LocalTimeZoneChanged?.Invoke(this, LocalTimeZone);
+			TimeZoneChanged?.Invoke(this, LocalTimeZone);
 		}
 	}
 }

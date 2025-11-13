@@ -8,12 +8,12 @@ namespace UniBlazor.Internal;
 /// </summary>
 public class BrowserTimeCircuitHandler(
 	ILogger<BrowserTimeCircuitHandler> logger,
-	TimeProvider timeProvider,
+	IUserTimeProvider timeProvider,
 	IJSRuntime js
 ) : CircuitHandler
 {
 	readonly ILogger _logger = logger;
-	readonly TimeProvider _timeProvider = timeProvider;
+	readonly IUserTimeProvider _timeProvider = timeProvider;
 	readonly IJSRuntime _js = js;
 
 	public override async Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)

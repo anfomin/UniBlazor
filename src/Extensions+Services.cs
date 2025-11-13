@@ -23,12 +23,12 @@ public static class UniBlazorExtensions
 		}
 
 		/// <summary>
-		/// Registers <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
+		/// Registers <see cref="IUserTimeProvider"/> as <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
 		/// </summary>
 		public IServiceCollection AddUniBrowserTime()
 		{
 			services.AddHttpContextAccessor();
-			services.AddScoped<TimeProvider, UniTimeProvider>();
+			services.AddScoped<IUserTimeProvider, UniTimeProvider>();
 			services.AddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
 			return services;
 		}
