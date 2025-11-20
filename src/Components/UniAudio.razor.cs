@@ -77,7 +77,6 @@ public sealed partial class UniAudio : UniComponentBase
 
 	async Task SetStatusAsync(AudioStatus status)
 	{
-		Console.WriteLine($"Audio status: {status}");
 		Status = status;
 		await OnStatus.InvokeAsync(status);
 	}
