@@ -1,3 +1,12 @@
+:root {
+	--uni-transion-duration:		225ms;
+	--uni-border-radius:			4px;
+	--uni-border-color:				gray;
+	--uni-file-dnd-border-width:	2px;
+	--uni-file-dnd-border-style:	dashed;
+	--uni-file-dnd-background:		color-mix(in srgb, lightgray, transparent 50%);
+}
+
 .uni-old-browser {
 	position: fixed;
 	top: 0;
@@ -28,4 +37,29 @@
 .uni-old-browser img {
 	width: 300px;
 	max-width: 100%;
+}
+
+.uni-file-dnd {
+	position: relative;
+
+	&:not(.disabled):after {
+		display: block;
+		content: '';
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		border: var(--uni-file-dnd-border-width) var(--uni-file-dnd-border-style) var(--uni-border-color);
+		border-radius: var(--uni-border-radius);
+		background-color: var(--uni-file-dnd-background);
+		transition-property: opacity;
+		transition-duration: var(--uni-transion-duration);
+		pointer-events: none;
+		opacity: 0;
+	}
+
+	&.dragging:after {
+		opacity: 1;
+	}
 }
