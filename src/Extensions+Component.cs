@@ -26,7 +26,7 @@ public static partial class Extensions
 			where TComponent : IComponent
 			=> htmlRenderer.Dispatcher.InvokeAsync(async () =>
 			{
-				var parameterView = parameters == null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
+				var parameterView = parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
 				var output = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
 				return output.ToHtmlString();
 			});

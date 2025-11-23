@@ -71,7 +71,7 @@ public sealed partial class UniAudio : UniComponentBase
 	protected override async ValueTask DisposeAsyncCore()
 	{
 		await base.DisposeAsyncCore();
-		if (_jsInternal != null)
+		if (_jsInternal is not null)
 			await _jsInternal.DisposeAsyncSafe();
 	}
 
@@ -87,7 +87,7 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if play method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PlayAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal == null || _audioRef is not { } audio)
+		if (_jsInternal is null || _audioRef is not { } audio)
 			return false;
 		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, "play");
 		return true;
@@ -99,7 +99,7 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PauseAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal == null || _audioRef is not { } audio)
+		if (_jsInternal is null || _audioRef is not { } audio)
 			return false;
 		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, "pause");
 		return true;
@@ -111,7 +111,7 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if play/pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PlayPauseAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal == null || _audioRef is not { } audio)
+		if (_jsInternal is null || _audioRef is not { } audio)
 			return false;
 		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, Status == AudioStatus.Playing ? "pause" : "play");
 		return true;

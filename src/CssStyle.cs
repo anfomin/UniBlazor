@@ -54,7 +54,7 @@ public class CssStyle
 	{
 		if (string.IsNullOrWhiteSpace(raw))
 			return this;
-		if (_string == null)
+		if (_string is null)
 			_string = new();
 		else
 			_string.Append(';');
@@ -107,7 +107,7 @@ public class CssStyle
 	{
 		if (string.IsNullOrWhiteSpace(prop))
 			return this;
-		if (_string == null)
+		if (_string is null)
 			_string = new();
 		else
 			_string.Append(';');

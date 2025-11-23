@@ -38,7 +38,7 @@ public sealed partial class UniMask : ComponentBase, IAsyncDisposable
 
 	async ValueTask IAsyncDisposable.DisposeAsync()
 	{
-		if (_jsMask != null)
+		if (_jsMask is not null)
 			await _jsMask.DisposeAsync();
 	}
 }

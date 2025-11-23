@@ -77,7 +77,7 @@ public static class ComponentHelper
 			string name = (@short ? displayAttribute?.ShortName : displayAttribute?.Name)
 				?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
 				?? memberInfo.Name;
-			if (key.Edit && (memberInfo.GetCustomAttribute<RequiredAttribute>(true) != null
+			if (key.Edit && (memberInfo.GetCustomAttribute<RequiredAttribute>(true) is not null
 					|| memberInfo is PropertyInfo propertyInfo && !propertyInfo.PropertyType.IsNullable()
 				))
 				name += "*";
@@ -94,7 +94,7 @@ public static class ComponentHelper
 		});
 
 	static string GetExpressionKey(Type? target, Expression body)
-		=> target != null ? $"{target.FullName}:{body}" : body.ToString();
+		=> target is not null ? $"{target.FullName}:{body}" : body.ToString();
 
 	static MemberInfo? GetPropertyInformation(Expression expression)
 		=> expression switch

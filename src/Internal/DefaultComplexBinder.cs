@@ -113,7 +113,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	public object Create(Type type, Dictionary<ReadOnlyMemory<char>, ReadOnlyMemory<char>>? queryString)
 	{
 		var obj = ActivatorUtilities.CreateInstance(_serviceProvider, type);
-		if (queryString != null)
+		if (queryString is not null)
 			Bind(obj, queryString);
 		return obj;
 	}

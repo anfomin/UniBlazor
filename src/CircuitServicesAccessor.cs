@@ -29,7 +29,7 @@ public class CircuitServicesAccessor : IServiceProvider
 	/// <exception cref="InvalidOperationException">Method invoked outside of Blazor circuit.</exception>
 	public object? GetService(Type serviceType)
 	{
-		if (CircuitServices.Value == null)
+		if (CircuitServices.Value is null)
 			throw new InvalidOperationException("Circuit services not available");
 		return CircuitServices.Value.GetService(serviceType);
 	}

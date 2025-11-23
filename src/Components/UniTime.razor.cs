@@ -59,7 +59,7 @@ public sealed partial class UniTime : ComponentBase, IDisposable
 
 	void TimeZoneChanged(object? sender, TimeZoneInfo e)
 	{
-		if (TimeZone == null)
+		if (TimeZone is null)
 			StateHasChanged();
 	}
 }

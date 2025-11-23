@@ -27,12 +27,12 @@ public class UniValidator : ComponentBase, IDisposable
 
 	protected override void OnInitialized()
 	{
-		if (EditContext == null)
+		if (EditContext is null)
 			throw new InvalidOperationException($"{nameof(UniValidator)} requires a cascading parameter of type {nameof(EditContext)}");
 
 		if (EditContext != _previousEditContext)
 		{
-			if (_previousEditContext != null)
+			if (_previousEditContext is not null)
 			{
 				_previousEditContext.OnFieldChanged -= OnFieldChanged;
 				_previousEditContext.OnValidationRequested -= OnValidationRequested;
@@ -48,7 +48,7 @@ public class UniValidator : ComponentBase, IDisposable
 
 	public void Dispose()
 	{
-		if (EditContext != null)
+		if (EditContext is not null)
 		{
 			EditContext.OnFieldChanged -= OnFieldChanged;
 			EditContext.OnValidationRequested -= OnValidationRequested;
@@ -72,7 +72,7 @@ public class UniValidator : ComponentBase, IDisposable
 	/// </summary>
 	void Validate()
 	{
-		if (_messageStore == null || EditContext == null)
+		if (_messageStore is null || EditContext is null)
 			return;
 		_messageStore.Clear();
 		_messageStore.Add(EditContext.Field(string.Empty), OnValidate());

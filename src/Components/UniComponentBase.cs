@@ -34,7 +34,7 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	{
 		get
 		{
-			if (ScopeFactory == null)
+			if (ScopeFactory is null)
 				throw new InvalidOperationException("Services cannot be accessed before the component is initialized.");
 
 			ObjectDisposedException.ThrowIf(IsDisposed, this);

@@ -25,7 +25,7 @@ public sealed class JSFile(
 
 	public async ValueTask DisposeAsync()
 	{
-		if (_stream != null)
+		if (_stream is not null)
 		{
 			await _stream.DisposeAsync();
 			_stream = null;
@@ -40,7 +40,7 @@ public sealed class JSFile(
 
 	public ValueTask<Stream> OpenReadStreamAsync(long maxAllowedSize, CancellationToken cancellationToken = default)
 	{
-		if (_stream == null)
+		if (_stream is null)
 			throw new InvalidOperationException("File was disposed");
 		return _stream.OpenReadStreamAsync(maxAllowedSize, cancellationToken);
 	}

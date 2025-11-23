@@ -37,7 +37,7 @@ public struct CssClass
 	{
 		if (string.IsNullOrWhiteSpace(value))
 			return this;
-		if (_string == null)
+		if (_string is null)
 			_string = new(value);
 		else
 		{

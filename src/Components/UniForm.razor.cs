@@ -121,7 +121,7 @@ public sealed partial class UniForm : UniComponentBase
 	/// <summary>
 	/// Gets if form should confirm navigation.
 	/// </summary>
-	public bool ShouldConfirmNavigation => ConfirmNavigation && Model != null && _form?.EditContext?.IsModified() == true;
+	public bool ShouldConfirmNavigation => ConfirmNavigation && Model is not null && _form?.EditContext?.IsModified() == true;
 
 	/// <summary>
 	/// Specifies default CSS class for every <see cref="UniForm"/>.
@@ -157,7 +157,7 @@ public sealed partial class UniForm : UniComponentBase
 	protected override async ValueTask DisposeAsyncCore()
 	{
 		await base.DisposeAsyncCore();
-		if (_jsInternal != null)
+		if (_jsInternal is not null)
 			await _jsInternal.DisposeAsyncSafe();
 	}
 
@@ -167,7 +167,7 @@ public sealed partial class UniForm : UniComponentBase
 	/// <exception cref="InvalidOperationException"><see cref="EditForm"/> or <see cref="EditContext"/> is not initialized.</exception>
 	public async Task SubmitAsync()
 	{
-		if (_form == null)
+		if (_form is null)
 			throw new InvalidOperationException("Form is null");
 
 		var context = _form.EditContext ?? throw new InvalidOperationException("Form EditContext is null");
@@ -191,7 +191,7 @@ public sealed partial class UniForm : UniComponentBase
 		foreach (string message in context.GetValidationMessages())
 			Logger.LogDebug(message);
 
-		if (_jsInternal != null)
+		if (_jsInternal is not null)
 		{
 			try
 			{

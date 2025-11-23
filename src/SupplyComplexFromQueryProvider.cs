@@ -82,7 +82,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 			return false;
 
 		var queryString = QueryStringHelper.GetQueryString(uri);
-		if (_lastUri != null && queryString.Span.SequenceEqual(QueryStringHelper.GetQueryString(_lastUri).Span))
+		if (_lastUri is not null && queryString.Span.SequenceEqual(QueryStringHelper.GetQueryString(_lastUri).Span))
 		{
 			_lastUri = uri;
 			return false;

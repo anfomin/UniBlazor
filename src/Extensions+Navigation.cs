@@ -84,7 +84,7 @@ public static partial class Extensions
 		/// <param name="path">Destination path.</param>
 		/// <param name="parameters">New query parameters to merge with current ones.</param>
 		public void NavigatePreservingQueryTo([StringSyntax(StringSyntaxAttribute.Uri)] string path, IReadOnlyDictionary<string, object?>? parameters = null)
-			=> navigation.NavigateTo(parameters == null
+			=> navigation.NavigateTo(parameters is null
 				? navigation.GetUriPreservingQuery(path)
 				: navigation.GetUriPreservingQuery(path, parameters)
 			);

@@ -16,7 +16,7 @@ public sealed class UniTimeProvider : TimeProvider, ITimeProvider
 	/// <summary>
 	/// Gets a value indicating whether the browser's time zone has been set.
 	/// </summary>
-	public bool IsTimeZoneSet => _browserTimeZone != null;
+	public bool IsTimeZoneSet => _browserTimeZone is not null;
 
 	public event EventHandler<TimeZoneInfo>? TimeZoneChanged;
 
