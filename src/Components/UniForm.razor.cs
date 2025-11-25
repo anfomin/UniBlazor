@@ -14,9 +14,8 @@ namespace UniBlazor;
 /// </list>
 /// Provides navigation confirmation if <see cref="EditContext"/> is modified.
 /// </summary>
-public sealed partial class UniForm : UniComponentBase
+public sealed partial class UniForm : UniJSComponentBase
 {
-	IJSObjectReference? _jsInternal;
 	EditForm? _form;
 
 	/// <summary>
@@ -29,12 +28,6 @@ public sealed partial class UniForm : UniComponentBase
 	/// </summary>
 	[Inject]
 	ILogger<UniForm> Logger { get; set; } = null!;
-
-	/// <summary>
-	/// Gets JS runtime.
-	/// </summary>
-	[Inject]
-	IJSRuntime JS { get; set; } = null!;
 
 	/// <summary>
 	/// Specifies the top-level model object for the form. An edit context will be constructed for this model.
@@ -151,14 +144,7 @@ public sealed partial class UniForm : UniComponentBase
 	protected override async Task InitializeJSAsync()
 	{
 		await base.InitializeJSAsync();
-		_jsInternal = await JS.ImportInternalModuleAsync(Aborted);
-	}
-
-	protected override async ValueTask DisposeAsyncCore()
-	{
-		await base.DisposeAsyncCore();
-		if (_jsInternal is not null)
-			await _jsInternal.DisposeAsyncSafe();
+		JSObject = await JS.ImportInternalModuleAsync(Aborted);
 	}
 
 	/// <summary>
@@ -191,11 +177,11 @@ public sealed partial class UniForm : UniComponentBase
 		foreach (string message in context.GetValidationMessages())
 			Logger.LogDebug(message);
 
-		if (_jsInternal is not null)
+		if (JSObject is not null)
 		{
 			try
 			{
-				await _jsInternal.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
+				await JSObject.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
 			}
 			catch (JSDisconnectedException) { }
 		}

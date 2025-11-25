@@ -6,18 +6,11 @@ namespace UniBlazor;
 /// <summary>
 /// A drag &amp; drop file upload component.
 /// </summary>
-public sealed partial class UniFileDnd : UniComponentBase
+public sealed partial class UniFileDnd : UniJSComponentBase
 {
 	readonly List<WeakReference<JSFile>> _files = [];
 	ElementReference _elementRef;
-	IJSObjectReference? _jsModule;
 	DotNetObjectReference<Handler>? _jsHandler;
-
-	/// <summary>
-	/// Gets JS runtime.
-	/// </summary>
-	[Inject]
-	IJSRuntime JS { get; set; } = null!;
 
 	/// <summary>
 	/// Specifies container CSS class.
@@ -55,9 +48,9 @@ public sealed partial class UniFileDnd : UniComponentBase
 	{
 		try
 		{
-			_jsModule = await JS.ImportAsync("/_content/UniBlazor/UniFileDnd.js");
+			JSObject = await JS.ImportAsync("/_content/UniBlazor/UniFileDnd.js");
 			_jsHandler = DotNetObjectReference.Create(new Handler(this));
-			await _jsModule.InvokeVoidAsync("init", _elementRef, _jsHandler);
+			await JSObject.InvokeVoidAsync("init", _elementRef, _jsHandler);
 		}
 		catch (JSDisconnectedException) { }
 	}
@@ -65,11 +58,6 @@ public sealed partial class UniFileDnd : UniComponentBase
 	protected override async ValueTask DisposeAsyncCore()
 	{
 		await base.DisposeAsyncCore();
-		if (_jsModule is not null)
-		{
-			await _jsModule.DisposeAsyncSafe();
-			_jsModule = null;
-		}
 		if (_jsHandler is not null)
 		{
 			_jsHandler.Dispose();
@@ -89,9 +77,9 @@ public sealed partial class UniFileDnd : UniComponentBase
 	{
 		if (Disabled)
 			return;
-		if (_jsModule is null || _jsHandler is null)
+		if (JSObject is null || _jsHandler is null)
 			throw new InvalidOperationException("JS drag & drop module is disposed");
-		await _jsModule.InvokeVoidAsync("openPicker", cancellationToken, _jsHandler, Accept);
+		await JSObject.InvokeVoidAsync("openPicker", cancellationToken, _jsHandler, Accept);
 	}
 
 	class Handler(UniFileDnd component)

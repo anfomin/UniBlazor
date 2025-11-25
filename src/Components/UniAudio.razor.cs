@@ -3,16 +3,9 @@ using Microsoft.JSInterop;
 
 namespace UniBlazor;
 
-public sealed partial class UniAudio : UniComponentBase
+public sealed partial class UniAudio : UniJSComponentBase
 {
-	IJSObjectReference? _jsInternal;
 	ElementReference? _audioRef;
-
-	/// <summary>
-	/// Gets JS runtime.
-	/// </summary>
-	[Inject]
-	IJSRuntime JS { get; set; } = null!;
 
 	/// <summary>
 	/// Gets or sets the source URL of the audio file.
@@ -65,14 +58,7 @@ public sealed partial class UniAudio : UniComponentBase
 	protected override async Task InitializeJSAsync()
 	{
 		await base.InitializeJSAsync();
-		_jsInternal = await JS.ImportInternalModuleAsync(Aborted);
-	}
-
-	protected override async ValueTask DisposeAsyncCore()
-	{
-		await base.DisposeAsyncCore();
-		if (_jsInternal is not null)
-			await _jsInternal.DisposeAsyncSafe();
+		JSObject = await JS.ImportInternalModuleAsync(Aborted);
 	}
 
 	async Task SetStatusAsync(AudioStatus status)
@@ -87,9 +73,9 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if play method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PlayAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal is null || _audioRef is not { } audio)
+		if (JSObject is null || _audioRef is not { } audio)
 			return false;
-		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, "play");
+		await JSObject.InvokeVoidAsync("invokeElement", cancellationToken, audio, "play");
 		return true;
 	}
 
@@ -99,9 +85,9 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PauseAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal is null || _audioRef is not { } audio)
+		if (JSObject is null || _audioRef is not { } audio)
 			return false;
-		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, "pause");
+		await JSObject.InvokeVoidAsync("invokeElement", cancellationToken, audio, "pause");
 		return true;
 	}
 
@@ -111,9 +97,9 @@ public sealed partial class UniAudio : UniComponentBase
 	/// <returns><c>true</c> if play/pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
 	public async ValueTask<bool> PlayPauseAsync(CancellationToken cancellationToken = default)
 	{
-		if (_jsInternal is null || _audioRef is not { } audio)
+		if (JSObject is null || _audioRef is not { } audio)
 			return false;
-		await _jsInternal.InvokeVoidAsync("invokeElement", cancellationToken, audio, Status == AudioStatus.Playing ? "pause" : "play");
+		await JSObject.InvokeVoidAsync("invokeElement", cancellationToken, audio, Status == AudioStatus.Playing ? "pause" : "play");
 		return true;
 	}
 }

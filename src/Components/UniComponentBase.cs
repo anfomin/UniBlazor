@@ -25,7 +25,7 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	/// Gets <see cref="IServiceScopeFactory"/> to create service provider scopes.
 	/// </summary>
 	[Inject]
-	protected IServiceScopeFactory ScopeFactory { get; set; } = default!;
+	protected IServiceScopeFactory ScopeFactory { get; private set; } = default!;
 
 	/// <summary>
 	/// Gets the scoped <see cref="IServiceProvider"/> that is associated with this component.
@@ -146,6 +146,7 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 				await InitializeJSAsync();
 			}
 			catch (JSDisconnectedException) { }
+			catch (JSException ex) when (ex.Message == "null") { }
 			IsRendered = true;
 		}
 		if (_parametersInitialized)
