@@ -144,7 +144,7 @@ public static class ComponentHelper
 	/// <param name="path">File path to add suffix to.</param>
 	public static string Get2X(string path)
 	{
-		var (name, ext) = PathHelper.SplitExtension(path);
+		var (name, ext) = Path.SplitExtension(path);
 		return $"{name}@2x{ext}";
 	}
 }
