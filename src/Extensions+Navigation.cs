@@ -70,7 +70,10 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="uri">The destination URI. This can be absolute, or relative to the base URI (as returned by <see cref="NavigationManager.BaseUri"/>).</param>
 		/// <param name="parameters">Query parameters.</param>
-		/// <param name="forceLoad">If <see langword="true"/>, bypasses client-side routing and forces the browser to load the new page from the server, whether or not the URI would normally be handled by the client-side router.</param>
+		/// <param name="forceLoad">
+		/// If <see langword="true"/>, bypasses client-side routing and forces the browser to load the new page from the server,
+		/// whether the URI would normally be handled by the client-side router.
+		/// </param>
 		public void NavigateTo([StringSyntax(StringSyntaxAttribute.Uri)] string uri, IReadOnlyDictionary<string, object?> parameters, bool forceLoad = false)
 		{
 			var parameters2 = parameters.ToDictionary(kv => kv.Key, kv => (object?)ConvertParameterValue(kv.Value));
@@ -148,17 +151,8 @@ public static partial class Extensions
 		null => null,
 		string s => s.NullIfEmpty(),
 		bool b => b.ToString(CultureInfo.InvariantCulture),
-		int i => i.ToString(CultureInfo.InvariantCulture),
-		short s => s.ToString(CultureInfo.InvariantCulture),
-		long l => l.ToString(CultureInfo.InvariantCulture),
-		double d => d.ToString(CultureInfo.InvariantCulture),
-		float f => f.ToString(CultureInfo.InvariantCulture),
-		decimal dec => dec.ToString(CultureInfo.InvariantCulture),
-		DateTime dt => dt.ToString(CultureInfo.InvariantCulture),
-		DateOnly d => d.ToString(CultureInfo.InvariantCulture),
-		TimeOnly t => t.ToString(CultureInfo.InvariantCulture),
-		Guid g => g.ToString(null, CultureInfo.InvariantCulture),
 		_ when value.GetType().IsEnum => ((int)value).ToString(CultureInfo.InvariantCulture),
+		IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
 		_ => value.ToString()
 	};
 }
