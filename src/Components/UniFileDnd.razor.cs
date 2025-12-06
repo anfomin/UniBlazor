@@ -27,6 +27,12 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 	public string? Accept { get; set; }
 
 	/// <summary>
+	/// Specifies whether multiple file selection is allowed.
+	/// </summary>
+	[Parameter]
+	public bool Multiple { get; set; }
+
+	/// <summary>
 	/// Specifies whether the file drag &amp; drop is disabled.
 	/// </summary>
 	[Parameter]
@@ -42,7 +48,7 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 	/// A callback that will be invoked when a file is selected.
 	/// </summary>
 	[Parameter]
-	public EventCallback<IBrowserFileAsync> OnFile { get; set; }
+	public EventCallback<File> OnFile { get; set; }
 
 	protected override async Task InitializeJSAsync()
 	{
@@ -50,7 +56,7 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 		{
 			JSObject = await JS.ImportAsync("/_content/UniBlazor/UniFileDnd.js");
 			_jsHandler = DotNetObjectReference.Create(new Handler(this));
-			await JSObject.InvokeVoidAsync("init", _elementRef, _jsHandler);
+			await JSObject.InvokeVoidAsync("init", _elementRef, _jsHandler, Multiple);
 		}
 		catch (JSDisconnectedException) { }
 	}
@@ -79,19 +85,56 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 			return;
 		if (JSObject is null || _jsHandler is null)
 			throw new InvalidOperationException("JS drag & drop module is disposed");
-		await JSObject.InvokeVoidAsync("openPicker", cancellationToken, _jsHandler, Accept);
+		await JSObject.InvokeVoidAsync("openPicker", cancellationToken, _jsHandler, Accept, Multiple);
 	}
 
 	class Handler(UniFileDnd component)
 	{
 		[JSInvokable]
-		public async Task SelectFileAsync(string name, long lastModified, string contentType, IJSStreamReference stream)
+		public async Task<bool> SelectFileAsync(int index, int total, string name, long lastModified, string contentType, IJSStreamReference stream)
 		{
 			if (component.Disabled)
-				return;
-			var file = new JSFile(name, lastModified, contentType, stream);
+				return false;
+			var file = new File(name, lastModified, contentType, stream)
+			{
+				Index = index,
+				Total = total
+			};
 			component._files.Add(new(file));
 			await component.OnFile.InvokeAsync(file);
+			return !file.Canceled;
 		}
+	}
+
+	/// <summary>
+	/// Represents a file selected via the <see cref="UniFileDnd"/> component.
+	/// </summary>
+	/// <param name="name">The name of the file as specified by the browser.</param>
+	/// <param name="lastModified">The last modified date as specified by the browser.</param>
+	/// <param name="contentType">The MIME type of the file as specified by the browser.</param>
+	/// <param name="stream">JS file stream.</param>
+	public class File(string name, long lastModified, string contentType, IJSStreamReference stream)
+		: JSFile(name, lastModified, contentType, stream)
+	{
+		/// <summary>
+		/// Gets file index for multiple selection.
+		/// </summary>
+		public required int Index { get; init; }
+
+		/// <summary>
+		/// Gets total number of selected files for multiple selection.
+		/// </summary>
+		public required int Total { get; init; }
+
+		/// <summary>
+		/// Gets whether the file upload was canceled.
+		/// </summary>
+		public bool Canceled { get; private set; }
+
+		/// <summary>
+		/// Cancels next files upload in multiple selection.
+		/// </summary>
+		public void Cancel()
+			=> Canceled = true;
 	}
 }
