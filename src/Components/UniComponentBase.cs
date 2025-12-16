@@ -15,8 +15,7 @@ namespace UniBlazor;
 /// </summary>
 public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 {
-	readonly CancellationTokenSource _abortedSource = new();
-	CancellationToken? _abortedToken;
+	readonly CancellationTokenSource _abortedSource;
 	AsyncServiceScope? _scope;
 	IReadOnlyDictionary<string, object?>? _parametersPrev;
 	bool _parametersInitialized;
@@ -51,9 +50,9 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 
 	/// <summary>
 	/// Gets a cancellation token that is triggered when the component is disposed.
-	/// Token is cancelled before <see cref="ScopedServices"/> disposing.
+	/// Token is canceled before <see cref="ScopedServices"/> disposing.
 	/// </summary>
-	protected CancellationToken Aborted => _abortedToken ??= _abortedSource.Token;
+	protected CancellationToken Aborted { get; }
 
 	/// <summary>
 	/// Gets a value determining if the component and associated services have been disposed.
@@ -75,6 +74,15 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	/// Default <see langword="true"/>.
 	/// </summary>
 	protected virtual bool DistinctParameters => true;
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="UniComponentBase"/> class.
+	/// </summary>
+	public UniComponentBase()
+	{
+		_abortedSource = new();
+		Aborted = _abortedSource.Token;
+	}
 
 	void IDisposable.Dispose()
 	{

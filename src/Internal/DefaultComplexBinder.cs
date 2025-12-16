@@ -47,7 +47,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	public static void RegisterParser<T>(TryParseDelegate<T> parser)
 		where T : notnull
 	{
-		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
+		Parsers[typeof(T)] = (s, [MaybeNullWhen(false)] out result) =>
 		{
 			if (parser(s, out var value))
 			{
@@ -65,7 +65,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 	public static void RegisterParser<T>(ParseDelegate<T> parser)
 		where T : notnull
 	{
-		Parsers[typeof(T)] = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
+		Parsers[typeof(T)] = (s, [MaybeNullWhen(false)] out result) =>
 		{
 			try
 			{
@@ -80,7 +80,7 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 		};
 	}
 
-	static bool TryGetParserForIParsable(Type type, [NotNullWhen(true)] out TryParseDelegate<object>? parser)
+	static bool TryCreateParser(Type type, [NotNullWhen(true)] out TryParseDelegate<object>? parser)
 	{
 		var parsable = typeof(IParsable<>).MakeGenericType(type);
 		if (!type.IsAssignableTo(parsable))
@@ -89,24 +89,44 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 			return false;
 		}
 
-		const string name = "TryParse";
-		const string nameEnding = $".{name}";
+		const string name = nameof(IParsable<>.TryParse);
 		var typeRef = type.MakeByRefType();
-		var tryParseMethod = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic).First(m =>
-			(m.Name == name || m.Name.EndsWith(nameEnding))
+		var staticMethods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+		if (staticMethods.FirstOrDefault(m =>
+			m.Name == name
 			&& m.ReturnParameter.ParameterType == typeof(bool)
 			&& m.GetParameters() is { Length: 3 } pars
 			&& pars[0].ParameterType == typeof(string)
 			&& pars[1].ParameterType == typeof(IFormatProvider)
 			&& pars[2].ParameterType == typeRef
-		);
-		parser = (ReadOnlySpan<char> s, [MaybeNullWhen(false)] out object result) =>
+		) is { } tryParseMethod3)
 		{
-			object?[] parameters = [s.ToString(), null, null];
-			bool res = (bool)tryParseMethod.Invoke(null, parameters)!;
-			result = res ? parameters[2] : null;
-			return res;
-		};
+			parser = (s, [MaybeNullWhen(false)] out result) =>
+			{
+				object?[] parameters = [s.ToString(), CultureInfo.InvariantCulture, null];
+				bool res = (bool)tryParseMethod3.Invoke(null, parameters)!;
+				result = res ? parameters[2] : null;
+				return res;
+			};
+		}
+		else if (staticMethods.FirstOrDefault(m =>
+			m.Name == name
+			&& m.ReturnParameter.ParameterType == typeof(bool)
+			&& m.GetParameters() is { Length: 2 } pars
+			&& pars[0].ParameterType == typeof(string)
+			&& pars[1].ParameterType == typeRef
+		) is { } tryParseMethod2)
+		{
+			parser = (s, [MaybeNullWhen(false)] out result) =>
+			{
+				object?[] parameters = [s.ToString(), null];
+				bool res = (bool)tryParseMethod2.Invoke(null, parameters)!;
+				result = res ? parameters[1] : null;
+				return res;
+			};
+		}
+		else
+			throw new InvalidOperationException($"{type}.TryParse method not found.");
 		return true;
 	}
 
@@ -128,19 +148,19 @@ public class DefaultComplexBinder(IServiceProvider serviceProvider) : IComplexOb
 			var propertyType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 			if (Parsers.TryGetValue(propertyType, out var parser))
 			{
-				if (parser(queryValue.Span, out var parserValue))
-					prop.SetValue(obj, parserValue);
+				if (parser(queryValue.Span, out var value))
+					prop.SetValue(obj, value);
 			}
 			else if (propertyType.IsEnum)
 			{
-				if (Enum.TryParse(propertyType, queryValue.Span, ignoreCase: true, out var enumValue))
-					prop.SetValue(obj, enumValue);
+				if (Enum.TryParse(propertyType, queryValue.Span, ignoreCase: true, out var value))
+					prop.SetValue(obj, value);
 			}
-			else if (TryGetParserForIParsable(propertyType, out var parsableParser))
+			else if (TryCreateParser(propertyType, out var newParser))
 			{
-				Parsers[propertyType] = parsableParser;
-				if (parsableParser(queryValue.Span, out var parsableValue))
-					prop.SetValue(obj, parsableValue);
+				Parsers[propertyType] = newParser;
+				if (newParser(queryValue.Span, out var value))
+					prop.SetValue(obj, value);
 			}
 			else
 				throw new NotSupportedException($"Type {propertyType} is not supported for query parameters");
