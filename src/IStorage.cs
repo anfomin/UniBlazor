@@ -96,9 +96,9 @@ public interface IStorageBase
 /// <summary>
 /// Key-value local storage.
 /// </summary>
-public interface ILocalStorage : IStorageBase { }
+public interface ILocalStorage : IStorageBase;
 
 /// <summary>
 /// Key-value session storage.
 /// </summary>
-public interface ISessionStorage : IStorageBase { }
+public interface ISessionStorage : IStorageBase;

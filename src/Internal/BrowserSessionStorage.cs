@@ -8,5 +8,4 @@ namespace UniBlazor.Internal;
 /// Represents <see cref="ISessionStorage"/> implementation for browser via <see cref="IJSRuntime"/>.
 /// </summary>
 public class BrowserSessionStorage(IJSRuntime js, IOptions<JsonOptions> jsonOptions)
-	: BrowserStorage(js, jsonOptions, "sessionStorage"), ISessionStorage
-{ }
+	: BrowserStorage(js, jsonOptions, "sessionStorage"), ISessionStorage;

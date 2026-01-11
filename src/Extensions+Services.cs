@@ -23,6 +23,15 @@ public static class UniBlazorExtensions
 		}
 
 		/// <summary>
+		/// Registers browser <see cref="IClipboard"/>.
+		/// </summary>
+		public IServiceCollection AddUniBrowserClipboard()
+		{
+			services.AddScoped<IClipboard, BrowserClipboard>();
+			return services;
+		}
+
+		/// <summary>
 		/// Registers <see cref="ITimeProvider"/> as <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
 		/// </summary>
 		public IServiceCollection AddUniBrowserTime()

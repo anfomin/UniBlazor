@@ -8,5 +8,4 @@ namespace UniBlazor.Internal;
 /// Represents <see cref="ILocalStorage"/> implementation for browser via <see cref="IJSRuntime"/>.
 /// </summary>
 public class BrowserLocalStorage(IJSRuntime js, IOptions<JsonOptions> jsonOptions)
-	: BrowserStorage(js, jsonOptions, "localStorage"), ILocalStorage
-{ }
+	: BrowserStorage(js, jsonOptions, "localStorage"), ILocalStorage;
