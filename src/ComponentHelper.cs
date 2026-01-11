@@ -105,41 +105,46 @@ public static class ComponentHelper
 		};
 
 	/// <summary>
-	/// Compares two component parameter dictionaries. Parameters meant equal if they are:
-	/// <list type="bullet">
-	/// <item>Both <c>null</c>.</item>
-	///	<item><see cref="IComparable"/> and compare returns 0.</item>
-	/// <item><see cref="EventCallback"/> and <see cref="EventCallback.HasDelegate"/> equals.</item>
+	/// Compares two component parameter dictionaries. Each parameter comparison algorithm:
+	/// <list type="number">
+	/// <item>Both <c>null</c> are equal.</item>
+	/// <item>Any <see cref="Delegate"/> not equal.</item>
+	///	<item>Both <see cref="IComparable"/> and <see cref="IComparable.CompareTo"/> returns 0.</item>
+	/// <item>Both <see cref="EventCallback"/> and <see cref="EventCallback.HasDelegate"/> equals.</item>
 	/// <item>Otherwise, <see cref="object.Equals(object?)"/> is used.</item>
 	/// </list>
 	/// </summary>
-	public static bool IsParametersEqual(IReadOnlyDictionary<string, object?> parametersNew, IReadOnlyDictionary<string, object?>? parametersPrev)
+	public static bool EqualParameters(IReadOnlyDictionary<string, object?> parametersNew, IReadOnlyDictionary<string, object?>? parametersPrev)
 		=> parametersNew.Count == parametersPrev?.Count
 			&& parametersNew.All(
-				p => parametersPrev.TryGetValue(p.Key, out var prevValue) && IsParameterValueEqual(p.Value, prevValue)
+				p => parametersPrev.TryGetValue(p.Key, out var prevValue) && EqualParameterValue(p.Value, prevValue)
 			);
 
 	/// <summary>
-	/// Compares two component parameters. Parameters meant equal if they are:
-	/// <list type="bullet">
-	/// <item>Both <c>null</c>.</item>
-	///	<item><see cref="IComparable"/> and compare returns 0.</item>
-	/// <item><see cref="EventCallback"/> and <see cref="EventCallback.HasDelegate"/> equals.</item>
+	/// Compares two component parameters:
+	/// <list type="number">
+	/// <item>Both <c>null</c> are equal.</item>
+	/// <item>Any <see cref="Delegate"/> not equal.</item>
+	///	<item>Both <see cref="IComparable"/> and <see cref="IComparable.CompareTo"/> returns 0.</item>
+	/// <item>Both <see cref="EventCallback"/> and <see cref="EventCallback.HasDelegate"/> equals.</item>
 	/// <item>Otherwise, <see cref="object.Equals(object?)"/> is used.</item>
 	/// </list>
 	/// </summary>
-	public static bool IsParameterValueEqual(object? value1, object? value2)
+	public static bool EqualParameterValue(object? value1, object? value2)
 		=> (value1, value2) switch
 		{
 			(null, null) => true,
-			(null, _) or (_, null) => false,
+			(null, _)
+				or (_, null)
+				or (Delegate, _)
+				or (_, Delegate) => false,
 			(IComparable c1, IComparable c2) => c1.CompareTo(c2) == 0,
 			(EventCallback c1, EventCallback c2) => c1.HasDelegate == c2.HasDelegate, // do not compare event callback delegates
 			_ => value1.Equals(value2)
 		};
 
 	/// <summary>
-	/// Adds "@2x" suffix to the file path.
+	/// Adds <c>@2x</c> suffix to the file path.
 	/// </summary>
 	/// <param name="path">File path to add suffix to.</param>
 	public static string Get2X(string path)

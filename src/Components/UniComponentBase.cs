@@ -10,7 +10,7 @@ namespace UniBlazor;
 /// <item>Creates a service provider scope.</item>
 /// <item>Has <see cref="Navigation"/> manager.</item>
 /// <item>Has <see cref="Aborted"/> cancellation token that requests cancellation when the component is disposed.</item>
-/// <item>Checks for parameter equality via <see cref="ComponentHelper.IsParametersEqual"/> if <see cref="DistinctParameters"/> is <see langword="true"/>.</item>
+/// <item>Checks for parameter equality via <see cref="ComponentHelper.EqualParameters"/> if <see cref="CompareComplexParameters"/> is <c>true</c>.</item>
 /// </list>
 /// </summary>
 public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
@@ -70,10 +70,17 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	protected bool IsRenderedAfterParams { get; private set; }
 
 	/// <summary>
-	/// Returns if only distinct parameters should trigger OnParametersSet.
-	/// Default <see langword="true"/>.
+	/// If <c>true</c> then parameters are compared using algorithm:
+	/// <list type="number">
+	/// <item>Both <c>null</c> are equal.</item>
+	/// <item>Any <see cref="Delegate"/> not equal.</item>
+	///	<item>Both <see cref="IComparable"/> and <see cref="IComparable.CompareTo"/> returns 0.</item>
+	/// <item>Both <see cref="EventCallback"/> and <see cref="EventCallback.HasDelegate"/> equals.</item>
+	/// <item>Otherwise, <see cref="object.Equals(object?)"/> is used.</item>
+	/// </list>
+	/// Default is <c>true</c>.
 	/// </summary>
-	protected virtual bool DistinctParameters => true;
+	protected virtual bool CompareComplexParameters => true;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="UniComponentBase"/> class.
@@ -132,12 +139,12 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 
 	public override async Task SetParametersAsync(ParameterView parameters)
 	{
-		if (DistinctParameters)
+		if (CompareComplexParameters)
 		{
 			var parametersNew = parameters.ToDictionary();
 			var parametersPrev = _parametersPrev;
 			_parametersPrev = parametersNew;
-			if (ComponentHelper.IsParametersEqual(parametersNew, parametersPrev))
+			if (ComponentHelper.EqualParameters(parametersNew, parametersPrev))
 				return;
 		}
 		await base.SetParametersAsync(parameters);
