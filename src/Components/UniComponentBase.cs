@@ -95,13 +95,33 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	{
 		if (!IsDisposed)
 		{
-			_abortedSource.Cancel();
-			_abortedSource.Dispose();
-			Dispose(disposing: true);
-			_scope?.Dispose();
-			_scope = null;
 			IsDisposed = true;
+			DisposeInternal();
+			GC.SuppressFinalize(this);
 		}
+	}
+
+	async ValueTask IAsyncDisposable.DisposeAsync()
+	{
+		if (!IsDisposed)
+		{
+			IsDisposed = true;
+			await DisposeAsyncCore().ConfigureAwait(false);
+			DisposeInternal();
+			GC.SuppressFinalize(this);
+		}
+	}
+
+	/// <summary>
+	/// Synchronously disposes the component resources.
+	/// </summary>
+	void DisposeInternal()
+	{
+		_abortedSource.Cancel();
+		_abortedSource.Dispose();
+		Dispose(disposing: true);
+		_scope?.Dispose();
+		_scope = null;
 	}
 
 	/// <summary>
@@ -112,15 +132,6 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 	/// <see langword="true"/> if called from <see cref="IDisposable.Dispose"/>;
 	/// </param>
 	protected virtual void Dispose(bool disposing) { }
-
-	async ValueTask IAsyncDisposable.DisposeAsync()
-	{
-		if (!IsDisposed)
-		{
-			await DisposeAsyncCore().ConfigureAwait(false);
-			((IDisposable)this).Dispose();
-		}
-	}
 
 	/// <summary>
 	/// This method is called when the component is disposed asynchronously.
