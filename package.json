@@ -9,7 +9,7 @@
 	},
 	"devDependencies": {
 		"typescript": "~5.9.3",
-		"esbuild": "^0.27.0",
+		"esbuild": "^0.27.3",
 		"imask": "^7.6.1",
 		"detect-browser": "^5.3.0"
 	}
