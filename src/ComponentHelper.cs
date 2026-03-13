@@ -72,7 +72,7 @@ public static class ComponentHelper
 	static string LabelInternal(Type? expressionTarget, Expression expressionBody, bool @short = false, bool edit = false)
 		=> Labels.GetOrAdd((GetExpressionKey(expressionTarget, expressionBody), @short, edit), key =>
 		{
-			var memberInfo = GetPropertyInformation(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
+			var memberInfo = Expression.GetMember(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
 			var displayAttribute = memberInfo.GetCustomAttribute<DisplayAttribute>(true);
 			string name = (@short ? displayAttribute?.ShortName : displayAttribute?.Name)
 				?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
@@ -87,7 +87,7 @@ public static class ComponentHelper
 	static string? DescriptionInternal(Type? expressionTarget, Expression expressionBody)
 		=> Descriptions.GetOrAdd(GetExpressionKey(expressionTarget, expressionBody), _ =>
 		{
-			var memberInfo = GetPropertyInformation(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
+			var memberInfo = Expression.GetMember(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
 			return memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Description
 				?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
 				?? null;
@@ -95,14 +95,6 @@ public static class ComponentHelper
 
 	static string GetExpressionKey(Type? target, Expression body)
 		=> target is not null ? $"{target.FullName}:{body}" : body.ToString();
-
-	static MemberInfo? GetPropertyInformation(Expression expression)
-		=> expression switch
-		{
-			MemberExpression memberExpr => memberExpr.Member,
-			UnaryExpression { NodeType: ExpressionType.Convert, Operand: MemberExpression memberExpr2 } => memberExpr2.Member,
-			_ => null
-		};
 
 	/// <summary>
 	/// Compares two component parameter dictionaries. Each parameter comparison algorithm:
