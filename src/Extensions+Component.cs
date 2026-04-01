@@ -56,13 +56,29 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="parameters">Component parameters.</param>
 		/// <typeparam name="TComponent">Component type to render.</typeparam>
+		/// <returns>HTML string.</returns>
 		public Task<string> RenderComponentToHtmlAsync<TComponent>(Dictionary<string, object?>? parameters = null)
 			where TComponent : IComponent
 			=> htmlRenderer.Dispatcher.InvokeAsync(async () =>
 			{
 				var parameterView = parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
-				var output = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
-				return output.ToHtmlString();
+				var root = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
+				return root.ToHtmlString();
+			});
+
+		/// <summary>
+		/// Renders a Blazor component to HTML asynchronously.
+		/// </summary>
+		/// <param name="output">Used to write component HTML to.</param>
+		/// <param name="parameters">Component parameters.</param>
+		/// <typeparam name="TComponent">Component type to render.</typeparam>
+		public Task RenderComponentToHtmlAsync<TComponent>(TextWriter output, Dictionary<string, object?>? parameters = null)
+			where TComponent : IComponent
+			=> htmlRenderer.Dispatcher.InvokeAsync(async () =>
+			{
+				var parameterView = parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
+				var root = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
+				root.WriteHtmlTo(output);
 			});
 
 		/// <summary>
