@@ -1,7 +1,5 @@
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Web;
 
 namespace UniBlazor;
 
@@ -47,45 +45,5 @@ public static partial class Extensions
 		/// <returns>The current validation messages for the specified field.</returns>
 		public IEnumerable<string> GetValidationMessages<TField>(Expression<Func<TField>> accessor)
 			=> editContext.GetValidationMessages(FieldIdentifier.Create(accessor));
-	}
-
-	extension(HtmlRenderer htmlRenderer)
-	{
-		/// <summary>
-		/// Renders a Blazor component to HTML asynchronously.
-		/// </summary>
-		/// <param name="parameters">Component parameters.</param>
-		/// <typeparam name="TComponent">Component type to render.</typeparam>
-		/// <returns>HTML string.</returns>
-		public Task<string> RenderComponentToHtmlAsync<TComponent>(Dictionary<string, object?>? parameters = null)
-			where TComponent : IComponent
-			=> htmlRenderer.Dispatcher.InvokeAsync(async () =>
-			{
-				var parameterView = parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
-				var root = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
-				return root.ToHtmlString();
-			});
-
-		/// <summary>
-		/// Renders a Blazor component to HTML asynchronously.
-		/// </summary>
-		/// <param name="output">Used to write component HTML to.</param>
-		/// <param name="parameters">Component parameters.</param>
-		/// <typeparam name="TComponent">Component type to render.</typeparam>
-		public Task RenderComponentToHtmlAsync<TComponent>(TextWriter output, Dictionary<string, object?>? parameters = null)
-			where TComponent : IComponent
-			=> htmlRenderer.Dispatcher.InvokeAsync(async () =>
-			{
-				var parameterView = parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters);
-				var root = await htmlRenderer.RenderComponentAsync<TComponent>(parameterView);
-				root.WriteHtmlTo(output);
-			});
-
-		/// <summary>
-		/// Creates a component builder for the specified component type.
-		/// </summary>
-		public ComponentBuilder<TComponent> Build<TComponent>()
-			where TComponent : IComponent
-			=> new(htmlRenderer);
 	}
 }

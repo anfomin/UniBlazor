@@ -52,7 +52,7 @@ public static partial class Extensions
 		public string GetUriPreservingQuery([StringSyntax(StringSyntaxAttribute.Uri)] string path, IReadOnlyDictionary<string, object?> parameters)
 		{
 			NavParams query = [];
-			var queryEnumerable = new QueryStringEnumerable(QueryStringHelper.GetQueryString(navigation.Uri));
+			var queryEnumerable = new QueryStringEnumerable(QueryHelpers.GetFromUrl(navigation.Uri));
 			foreach (var pair in queryEnumerable)
 			{
 				var decodedName = pair.DecodeName();
