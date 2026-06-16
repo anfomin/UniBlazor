@@ -81,8 +81,8 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 		if (uri == _lastUri)
 			return false;
 
-		var queryString = QueryHelpers.GetFromUrl(uri);
-		if (_lastUri is not null && queryString.Span.SequenceEqual(QueryHelpers.GetFromUrl(_lastUri).Span))
+		var queryString = QueryHelpers.GetFromUri(uri);
+		if (_lastUri is not null && queryString.Span.SequenceEqual(QueryHelpers.GetFromUri(_lastUri).Span))
 		{
 			_lastUri = uri;
 			return false;
@@ -90,7 +90,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 
 		_lastUri = uri;
 		_queryValues.Clear();
-		QueryStringEnumerable queryStringEnumerable = new(QueryHelpers.GetFromUrl(uri));
+		QueryStringEnumerable queryStringEnumerable = new(QueryHelpers.GetFromUri(uri));
 		foreach (var pair in queryStringEnumerable)
 		{
 			var decodedName = pair.DecodeName();

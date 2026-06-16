@@ -1,96 +1,95 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace UniBlazor;
 
 public static partial class Extensions
 {
-	/// <summary>
-	/// Returns if <paramref name="uri"/> path ends with <paramref name="suffix"/>.
-	/// </summary>
-	public static bool IsPathEndsWith(this Uri uri, string suffix)
-		=> uri.AbsolutePath.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
-
-	/// <summary>
-	/// Returns if location URI path ends with <paramref name="suffix"/>.
-	/// </summary>
-	public static bool IsPathEndsWith(this LocationChangedEventArgs args, string suffix)
-		=> new Uri(args.Location).IsPathEndsWith(suffix);
-
 	extension(NavigationManager navigation)
 	{
 		/// <summary>
+		/// Returns current relative URI to <see cref="NavigationManager.BaseUri"/> without leading slash.
+		/// </summary>
+		public ReadOnlySpan<char> RelativeUri
+			=> navigation.Uri.AsSpan()[navigation.BaseUri.Length..];
+
+		/// <summary>
+		/// Returns current URI path without leading slash.
+		/// </summary>
+		public ReadOnlySpan<char> Path
+			=> navigation.Uri.AsSpan().IndexOf('?') is int queryIndex && queryIndex != -1
+				? navigation.Uri.AsSpan()[navigation.BaseUri.Length..queryIndex]
+				: navigation.Uri.AsSpan()[navigation.BaseUri.Length..];
+
+		/// <summary>
+		/// Returns if current absolute URI ends with <paramref name="suffix"/>.
+		/// </summary>
+		public bool IsUriEndsWith(ReadOnlySpan<char> suffix)
+			=> navigation.Uri.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
+
+		/// <summary>
 		/// Returns if current URI path ends with <paramref name="suffix"/>.
 		/// </summary>
-		public bool IsPathEndsWith(string suffix)
-			=> new Uri(navigation.Uri).IsPathEndsWith(suffix);
+		public bool IsPathEndsWith(ReadOnlySpan<char> suffix)
+			=> navigation.Path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
 
 		/// <summary>
-		/// Returns local URI starting with '/'.
+		/// Return URI with specified <paramref name="uri"/> and query <paramref name="parameters"/>.
 		/// </summary>
-		public string GetLocalUri()
-			=> $"/{navigation.Uri[navigation.BaseUri.Length..].TrimStart('/')}";
-
-		/// <summary>
-		/// Return URI with specified <paramref name="path"/> and current query parameters.
-		/// </summary>
-		/// <param name="path">Destination path.</param>
-		public string GetUriPreservingQuery([StringSyntax(StringSyntaxAttribute.Uri)] string path)
-		{
-			var uri = new Uri(navigation.Uri);
-			return navigation.BaseUri + path.TrimStart('/') + uri.Query;
-		}
-
-		/// <summary>
-		/// Return URI with specified <paramref name="path"/> and new query <paramref name="parameters"/> merged with current query parameters.
-		/// </summary>
-		/// <param name="path">Destination path.</param>
+		/// <param name="uri">The destination URI. This can be absolute, or relative to the base URI (as returned by <see cref="P:NavigationManager.BaseUri" />).</param>
 		/// <param name="parameters">New query parameters.</param>
-		public string GetUriPreservingQuery([StringSyntax(StringSyntaxAttribute.Uri)] string path, IReadOnlyDictionary<string, object?> parameters)
+		/// <param name="preserveQuery">If <see langword="true"/>, preserves current query parameters.</param>
+		public string GetUri(
+			[StringSyntax(StringSyntaxAttribute.Uri)] string uri,
+			IReadOnlyDictionary<string, object?>? parameters = null,
+			bool relativeToCurrent = false,
+			bool preserveQuery = false)
 		{
-			NavParams query = [];
-			var queryEnumerable = new QueryStringEnumerable(QueryHelpers.GetFromUrl(navigation.Uri));
-			foreach (var pair in queryEnumerable)
-			{
-				var decodedName = pair.DecodeName();
-				var decodedValue = pair.DecodeValue();
-				query[decodedName.ToString()] = decodedValue.ToString();
-			}
-			foreach (var kv in parameters)
-				query[kv.Key] = ConvertParameterValue(kv.Value);
+			if (relativeToCurrent)
+				uri = UriHelper.Combine(navigation.Uri, uri);
 
-			return navigation.GetUriWithQueryParameters(path, query);
+			NavParams query = [];
+			if (preserveQuery)
+			{
+				var queryEnumerable = new QueryStringEnumerable(QueryHelpers.GetFromUri(navigation.Uri));
+				foreach (var pair in queryEnumerable)
+				{
+					var decodedName = pair.DecodeName();
+					var decodedValue = pair.DecodeValue();
+					query[decodedName.ToString()] = decodedValue.ToString();
+				}
+			}
+			if (parameters != null)
+			{
+				foreach (var kv in parameters)
+					query[kv.Key] = ConvertParameterValue(kv.Value);
+			}
+			return navigation.GetUriWithQueryParameters(uri, query);
 		}
 
 		/// <summary>
-		/// Navigates to the specified URI and query <paramref name="parameters"/>.
+		/// Navigates to the specified <paramref name="uri"/> and query <paramref name="parameters"/>.
 		/// </summary>
 		/// <param name="uri">The destination URI. This can be absolute, or relative to the base URI (as returned by <see cref="NavigationManager.BaseUri"/>).</param>
-		/// <param name="parameters">Query parameters.</param>
+		/// <param name="parameters">New query parameters.</param>
 		/// <param name="forceLoad">
 		/// If <see langword="true"/>, bypasses client-side routing and forces the browser to load the new page from the server,
 		/// whether the URI would normally be handled by the client-side router.
 		/// </param>
-		public void NavigateTo([StringSyntax(StringSyntaxAttribute.Uri)] string uri, IReadOnlyDictionary<string, object?> parameters, bool forceLoad = false)
+		/// <param name="preserveQuery">If <see langword="true"/>, preserves current query parameters.</param>
+		public void NavigateTo(
+			[StringSyntax(StringSyntaxAttribute.Uri)] string uri,
+			IReadOnlyDictionary<string, object?>? parameters = null,
+			bool forceLoad = false,
+			bool relativeToCurrent = false,
+			bool preserveQuery = false)
 		{
-			var parameters2 = parameters.ToDictionary(kv => kv.Key, kv => (object?)ConvertParameterValue(kv.Value));
-			string url = navigation.GetUriWithQueryParameters(uri, parameters2);
-			navigation.NavigateTo(url, forceLoad);
+			var uri2 = navigation.GetUri(uri, parameters, relativeToCurrent, preserveQuery);
+			navigation.NavigateTo(uri2, forceLoad);
 		}
-
-		/// <summary>
-		/// Navigates to the specified <paramref name="path"/> and current query parameters.
-		/// </summary>
-		/// <param name="path">Destination path.</param>
-		/// <param name="parameters">New query parameters to merge with current ones.</param>
-		public void NavigatePreservingQueryTo([StringSyntax(StringSyntaxAttribute.Uri)] string path, IReadOnlyDictionary<string, object?>? parameters = null)
-			=> navigation.NavigateTo(parameters is null
-				? navigation.GetUriPreservingQuery(path)
-				: navigation.GetUriPreservingQuery(path, parameters)
-			);
 
 		/// <summary>
 		/// Navigates to new query <paramref name="parameters"/>.
