@@ -1,7 +1,7 @@
 namespace UniBlazor;
 
 /// <summary>
-/// Used for creating and binding complex objects for <see cref="SupplyComplexFromQueryProvider"/>.
+/// Used for creating and binding complex objects for properties marked with <see cref="SupplyComplexFromQueryAttribute"/>.
 /// </summary>
 public interface IComplexObjectBinder
 {

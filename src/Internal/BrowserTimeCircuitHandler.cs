@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 namespace UniBlazor.Internal;
 
 /// <summary>
-/// Circuit handler that sets browser timezone to <see cref="UniTimeProvider"/> when circuit is opened.
+/// Circuit handler that sets browser timezone to <see cref="BrowserTimeProvider"/> when circuit is opened.
 /// </summary>
 public class BrowserTimeCircuitHandler(
 	ILogger<BrowserTimeCircuitHandler> logger,
@@ -18,9 +18,9 @@ public class BrowserTimeCircuitHandler(
 
 	public override async Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
 	{
-		if (_timeProvider is not UniTimeProvider timeProvider)
+		if (_timeProvider is not BrowserTimeProvider timeProvider)
 		{
-			_logger.LogWarning("{Type} must be registered to get browser timezone", nameof(UniTimeProvider));
+			_logger.LogWarning("{Type} must be registered to get browser timezone", nameof(BrowserTimeProvider));
 			return;
 		}
 

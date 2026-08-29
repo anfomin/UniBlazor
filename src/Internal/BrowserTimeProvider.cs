@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Http;
 
-namespace UniBlazor;
+namespace UniBlazor.Internal;
 
 /// <summary>
 /// Provides the current time in the browser's local time zone.
 /// Timezone is determined from cookie or set from browser via JS interop.
 /// </summary>
-public sealed class UniTimeProvider : TimeProvider, ITimeProvider
+public sealed class BrowserTimeProvider : TimeProvider, ITimeProvider
 {
 	const string CookieName = "uni-timezone";
 	readonly ILogger _logger;
@@ -24,9 +24,9 @@ public sealed class UniTimeProvider : TimeProvider, ITimeProvider
 		=> _browserTimeZone ?? _cookieTimeZone ?? base.LocalTimeZone;
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="UniTimeProvider"/> class.
+	/// Initializes a new instance of the <see cref="BrowserTimeProvider"/> class.
 	/// </summary>
-	public UniTimeProvider(ILogger<UniTimeProvider> logger, IHttpContextAccessor httpContextAccessor)
+	public BrowserTimeProvider(ILogger<BrowserTimeProvider> logger, IHttpContextAccessor httpContextAccessor)
 	{
 		_logger = logger;
 		if (httpContextAccessor.HttpContext is { } context

@@ -3,14 +3,13 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace UniBlazor;
+namespace UniBlazor.Internal;
 
 /// <summary>
 /// Provides parameter marked by <see cref="SupplyComplexFromQueryAttribute"/> with values from the query string.
 /// </summary>
-public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, NavigationManager navigation) : IDisposable
+public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, NavigationManager navigation) : IUniCascadingValueSupplier, IDisposable
 {
 	static readonly object UnboundLifetime;
 	static readonly MethodInfo ComponentNotifyCascadingValueChanged;
@@ -40,11 +39,7 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 	public bool CanSupplyValue(in CascadingParameterInfo parameterInfo)
 		=> parameterInfo.Attribute is SupplyComplexFromQueryAttribute;
 
-#if NET10_0_OR_GREATER
 	public object? GetCurrentValue(object? key, in CascadingParameterInfo parameterInfo)
-#else
-	public object? GetCurrentValue(in CascadingParameterInfo parameterInfo)
-#endif
 	{
 		if (TryUpdateUri(_navigation.Uri))
 			UpdateValues();
@@ -146,31 +141,5 @@ public class SupplyComplexFromQueryProvider(IComplexObjectBinder binder, Navigat
 			if (group.Any(s => changedTypes.Contains(s.PropertyType)))
 				ComponentNotifyCascadingValueChanged.Invoke(group.Key, [UnboundLifetime]);
 		}
-	}
-}
-
-/// <summary>
-/// Proxy for <see cref="SupplyComplexFromQueryProvider"/> that implements <see cref="ICascadingValueSupplier"/>.
-/// Required because <see cref="ICascadingValueSupplier"/> is internal.
-/// </summary>
-public class SupplyComplexFromQueryProviderProxy : DispatchProxy
-{
-	SupplyComplexFromQueryProvider _implementation = default!;
-
-	protected override object? Invoke(MethodInfo? targetMethod, object?[]? args)
-		=> _implementation.GetType().GetMethod(targetMethod!.Name, BindingFlags.Instance | BindingFlags.Public)!.Invoke(_implementation, args);
-
-	// ReSharper disable once InconsistentNaming
-	public static Type ICascadingValueSupplierType { get; }
-		= typeof(IComponent).Assembly.GetType("Microsoft.AspNetCore.Components.ICascadingValueSupplier")!;
-
-	public static object CreateProxy(IServiceProvider services)
-		=> CreateProxy(services.GetRequiredService<IComplexObjectBinder>(), services.GetRequiredService<NavigationManager>());
-
-	public static object CreateProxy(IComplexObjectBinder binder, NavigationManager navigation)
-	{
-		var proxy = (SupplyComplexFromQueryProviderProxy)Create(ICascadingValueSupplierType, typeof(SupplyComplexFromQueryProviderProxy));
-		proxy._implementation = new(binder, navigation);
-		return proxy;
 	}
 }

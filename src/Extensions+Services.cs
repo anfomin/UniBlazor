@@ -17,8 +17,8 @@ public static class UniBlazorExtensions
 		/// </summary>
 		public IServiceCollection AddUniBrowserStorage()
 		{
-			services.AddScoped<ILocalStorage, BrowserLocalStorage>();
-			services.AddScoped<ISessionStorage, BrowserSessionStorage>();
+			services.TryAddScoped<ILocalStorage, BrowserLocalStorage>();
+			services.TryAddScoped<ISessionStorage, BrowserSessionStorage>();
 			return services;
 		}
 
@@ -27,18 +27,18 @@ public static class UniBlazorExtensions
 		/// </summary>
 		public IServiceCollection AddUniBrowserClipboard()
 		{
-			services.AddScoped<IClipboard, BrowserClipboard>();
+			services.TryAddScoped<IClipboard, BrowserClipboard>();
 			return services;
 		}
 
 		/// <summary>
-		/// Registers <see cref="ITimeProvider"/> as <see cref="UniTimeProvider"/> that get timezone from cookie or browser via JS interop.
+		/// Registers <see cref="ITimeProvider"/> as <see cref="BrowserTimeProvider"/> that get timezone from cookie or browser via JS interop.
 		/// </summary>
 		public IServiceCollection AddUniBrowserTime()
 		{
 			services.AddHttpContextAccessor();
-			services.AddScoped<ITimeProvider, UniTimeProvider>();
-			services.AddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
+			services.TryAddScoped<ITimeProvider, BrowserTimeProvider>();
+			services.TryAddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
 			return services;
 		}
 
@@ -47,17 +47,24 @@ public static class UniBlazorExtensions
 		/// </summary>
 		public IServiceCollection AddCircuitServicesAccessor()
 		{
-			services.AddScoped<CircuitServicesAccessor>();
-			services.AddScoped<CircuitHandler, CircuitServicesAccessorHandler>();
+			services.TryAddScoped<CircuitServicesAccessor>();
+			services.TryAddScoped<CircuitHandler, CircuitServicesAccessorHandler>();
 			return services;
 		}
+
+		/// <summary>
+		/// Registers <typeparamref name="T"/> cascading value supplier.
+		/// </summary>
+		public IServiceCollection AddCascadingValueSupplier<T>()
+			where T : class, IUniCascadingValueSupplier
+			=> services.AddScoped(CascadingValueSupplierProxy.CascadingValueSupplierInterface, CascadingValueSupplierProxy<T>.CreateProxy);
 
 		/// <summary>
 		/// Register cascading value supplier for complex object properties marked with <see cref="SupplyComplexFromQueryAttribute"/>.
 		/// </summary>
 		public IServiceCollection AddCascadingSupplyComplexFromQuery()
 		{
-			services.AddScoped(SupplyComplexFromQueryProviderProxy.ICascadingValueSupplierType, SupplyComplexFromQueryProviderProxy.CreateProxy);
+			services.AddCascadingValueSupplier<SupplyComplexFromQueryProvider>();
 			services.TryAddScoped<IComplexObjectBinder, DefaultComplexBinder>();
 			return services;
 		}
