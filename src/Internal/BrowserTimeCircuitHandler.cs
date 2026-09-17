@@ -9,8 +9,8 @@ namespace UniBlazor.Internal;
 public class BrowserTimeCircuitHandler(
 	ILogger<BrowserTimeCircuitHandler> logger,
 	ITimeProvider timeProvider,
-	IJSRuntime js
-) : CircuitHandler
+	IJSRuntime js)
+	: CircuitHandler
 {
 	readonly ILogger _logger = logger;
 	readonly ITimeProvider _timeProvider = timeProvider;

@@ -7,7 +7,7 @@
 		<Description>Common used helper methods.</Description>
 		<Authors>Alexander Fomin</Authors>
 		<RepositoryUrl>https://github.com/anfomin/uniblazor</RepositoryUrl>
-		<VersionPrefix>1.13.0</VersionPrefix>
+		<VersionPrefix>1.13.1</VersionPrefix>
 		<VersionSuffix Condition="'$(VERSION_SUFFIX)'!=''">$(VERSION_SUFFIX)</VersionSuffix>
 		<RootNamespace>UniBlazor</RootNamespace>
 		<TargetFramework>net10.0</TargetFramework>
@@ -21,7 +21,7 @@
 
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-		<PackageReference Include="HelpersCore.Web" Version="1.19.2" />
+		<PackageReference Include="HelpersCore.Web" Version="1.19.3" />
 	</ItemGroup>
 
 	<ItemGroup>

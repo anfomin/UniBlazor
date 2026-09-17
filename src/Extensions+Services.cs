@@ -38,7 +38,7 @@ public static class UniBlazorExtensions
 		{
 			services.AddHttpContextAccessor();
 			services.TryAddScoped<ITimeProvider, BrowserTimeProvider>();
-			services.TryAddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
+			services.AddScoped<CircuitHandler, BrowserTimeCircuitHandler>();
 			return services;
 		}
 
@@ -48,7 +48,7 @@ public static class UniBlazorExtensions
 		public IServiceCollection AddCircuitServicesAccessor()
 		{
 			services.TryAddScoped<CircuitServicesAccessor>();
-			services.TryAddScoped<CircuitHandler, CircuitServicesAccessorHandler>();
+			services.AddScoped<CircuitHandler, CircuitServicesAccessorHandler>();
 			return services;
 		}
 
