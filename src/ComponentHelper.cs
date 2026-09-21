@@ -78,7 +78,7 @@ public static class ComponentHelper
 				?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
 				?? memberInfo.Name;
 			if (key.Edit && (memberInfo.GetCustomAttribute<RequiredAttribute>(true) is not null
-					|| memberInfo is PropertyInfo propertyInfo && !propertyInfo.PropertyType.IsNullable()
+					|| memberInfo is PropertyInfo propertyInfo && !propertyInfo.PropertyType.IsNullable
 				))
 				name += "*";
 			return name;
