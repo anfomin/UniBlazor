@@ -13,6 +13,7 @@ namespace UniBlazor;
 public static class ComponentHelper
 {
 	static readonly ConcurrentDictionary<(string ExpressionKey, bool Short, bool Edit), string> Labels = new();
+	static readonly ConcurrentDictionary<string, bool> Requires = new();
 	static readonly ConcurrentDictionary<string, string?> Descriptions = new();
 
 	/// <summary>
@@ -69,6 +70,20 @@ public static class ComponentHelper
 	public static string? DescriptionFor<T>(Expression<Func<T, object?>> expression)
 		=> DescriptionInternal(typeof(T), expression.Body);
 
+	/// <summary>
+	/// Returns <c>true</c> if property <paramref name="expression"/> is marked with <see cref="RequiredAttribute"/>.
+	/// </summary>
+	/// <param name="expression">Property expression.</param>
+	public static bool Required<T>(Expression<Func<T>> expression)
+		=> RequiredInternal(null, expression.Body);
+
+	/// <summary>
+	/// Returns <c>true</c> if property <paramref name="expression"/> is marked with <see cref="RequiredAttribute"/>.
+	/// </summary>
+	/// <param name="expression">Property expression.</param>
+	public static bool RequiredFor<T>(Expression<Func<T, object?>> expression)
+		=> RequiredInternal(typeof(T), expression.Body);
+
 	static string LabelInternal(Type? expressionTarget, Expression expressionBody, bool @short = false, bool edit = false)
 		=> Labels.GetOrAdd((GetExpressionKey(expressionTarget, expressionBody), @short, edit), key =>
 		{
@@ -91,6 +106,13 @@ public static class ComponentHelper
 			return memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Description
 				?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
 				?? null;
+		});
+
+	static bool RequiredInternal(Type? expressionTarget, Expression expressionBody)
+		=> Requires.GetOrAdd(GetExpressionKey(expressionTarget, expressionBody), _ =>
+		{
+			var memberInfo = Expression.GetMember(expressionBody) ?? throw new ArgumentException("No property reference expression was found", nameof(expressionBody));
+			return memberInfo.GetCustomAttribute<RequiredAttribute>(true) != null;
 		});
 
 	static string GetExpressionKey(Type? target, Expression body)
@@ -122,18 +144,17 @@ public static class ComponentHelper
 	/// <item>Otherwise, <see cref="object.Equals(object?)"/> is used.</item>
 	/// </list>
 	/// </summary>
-	public static bool EqualParameterValue(object? value1, object? value2)
-		=> (value1, value2) switch
-		{
-			(null, null) => true,
-			(null, _)
-				or (_, null)
-				or (Delegate, _)
-				or (_, Delegate) => false,
-			(IComparable c1, IComparable c2) => c1.CompareTo(c2) == 0,
-			(EventCallback c1, EventCallback c2) => c1.HasDelegate == c2.HasDelegate, // do not compare event callback delegates
-			_ => value1.Equals(value2)
-		};
+	public static bool EqualParameterValue(object? value1, object? value2) => (value1, value2) switch
+	{
+		(null, null) => true,
+		(null, _)
+			or (_, null)
+			or (Delegate, _)
+			or (_, Delegate) => false,
+		(IComparable c1, IComparable c2) => c1.CompareTo(c2) == 0,
+		(EventCallback c1, EventCallback c2) => c1.HasDelegate == c2.HasDelegate, // do not compare event callback delegates
+		_ => value1.Equals(value2)
+	};
 
 	/// <summary>
 	/// Adds <c>@2x</c> suffix to the file path.
