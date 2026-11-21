@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 
 namespace UniBlazor;
 
+[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 public static class JsExtensions
 {
 	/// <summary>

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -71,6 +72,7 @@ public sealed partial class UniAudio : UniJSComponentBase
 	/// Invokes play on the audio element.
 	/// </summary>
 	/// <returns><c>true</c> if play method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
+	[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 	public async ValueTask<bool> PlayAsync(CancellationToken cancellationToken = default)
 	{
 		if (JSObject is null || _audioRef is not { } audio)
@@ -83,6 +85,7 @@ public sealed partial class UniAudio : UniJSComponentBase
 	/// Invokes pause on the audio element.
 	/// </summary>
 	/// <returns><c>true</c> if pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
+	[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 	public async ValueTask<bool> PauseAsync(CancellationToken cancellationToken = default)
 	{
 		if (JSObject is null || _audioRef is not { } audio)
@@ -95,6 +98,7 @@ public sealed partial class UniAudio : UniJSComponentBase
 	/// Toggles play/pause on the audio element.
 	/// </summary>
 	/// <returns><c>true</c> if play/pause method invoked. <c>false</c> if JS runtime or audio element is not available.</returns>
+	[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 	public async ValueTask<bool> PlayPauseAsync(CancellationToken cancellationToken = default)
 	{
 		if (JSObject is null || _audioRef is not { } audio)

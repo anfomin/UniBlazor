@@ -165,7 +165,11 @@ public sealed partial class UniForm : UniJSComponentBase
 			return;
 		}
 
+#if NET11_0_OR_GREATER
+		if (await context.ValidateAsync(Aborted))
+#else
 		if (context.Validate())
+#endif
 			await OnSubmit.InvokeAsync(context);
 		else
 			await OnInvalidAsync(context);

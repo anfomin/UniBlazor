@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -79,6 +80,7 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 	/// <summary>
 	/// Opens the file picker dialog.
 	/// </summary>
+	[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 	public async Task OpenPickerAsync(CancellationToken cancellationToken = default)
 	{
 		if (Disabled)

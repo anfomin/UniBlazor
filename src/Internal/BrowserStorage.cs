@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.Options;
@@ -8,6 +9,7 @@ namespace UniBlazor.Internal;
 /// <summary>
 /// Represents <see cref="IStorageBase"/> implementation for browser via <see cref="IJSRuntime"/>.
 /// </summary>
+[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 public abstract class BrowserStorage(IJSRuntime js, IOptions<JsonOptions> jsonOptions, string storageName) : IStorageBase
 {
 	readonly IJSRuntime _js = js;

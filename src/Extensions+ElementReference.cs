@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -13,6 +14,7 @@ public static partial class Extensions
 		/// </summary>
 		/// <param name="behavior">Scroll behavior. Default smooth.</param>
 		/// <param name="position">Scroll block position. Default start.</param>
+		[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 		public async ValueTask ScrollIntoViewAsync(ScrollBehavior behavior = ScrollBehavior.Smooth, ScrollPosition position = ScrollPosition.Start, CancellationToken cancellationToken = default)
 		{
 			var js = elementReference.GetJsRuntime();

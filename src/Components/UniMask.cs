@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.JSInterop;
 
 namespace UniBlazor;
@@ -9,6 +10,7 @@ public sealed class UniMask : UniJSComponentBase
 {
 	protected override string DisposeMethodName => "destroy";
 
+	[SuppressMessage("Usage", "BL0016:Unguarded JS interop call")]
 	protected override async Task InitializeJSAsync()
 	{
 		await using var module = await JS.ImportAsync("/_content/UniBlazor/UniMask.js");
