@@ -173,6 +173,7 @@ public class UniComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 			}
 			catch (JSDisconnectedException) { }
 			catch (JSException ex) when (ex.Message == "null") { }
+			catch (OperationCanceledException) when (Aborted.IsCancellationRequested) { }
 			IsRendered = true;
 		}
 		if (_parametersInitialized)

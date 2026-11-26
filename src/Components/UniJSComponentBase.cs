@@ -36,7 +36,7 @@ public abstract class UniJSComponentBase : UniComponentBase
 					await JSObject.InvokeVoidAsync(method);
 				}
 				catch (JSDisconnectedException) { }
-				catch (OperationCanceledException) { }
+				catch (OperationCanceledException) when (Aborted.IsCancellationRequested) { }
 			}
 			await JSObject.DisposeAsyncSafe();
 			JSObject = null;

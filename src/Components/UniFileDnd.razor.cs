@@ -55,11 +55,12 @@ public sealed partial class UniFileDnd : UniJSComponentBase
 	{
 		try
 		{
-			JSObject = await JS.ImportAsync("/_content/UniBlazor/UniFileDnd.js");
+			JSObject = await JS.ImportAsync("/_content/UniBlazor/UniFileDnd.js", Aborted);
 			_jsHandler = DotNetObjectReference.Create(new Handler(this));
-			await JSObject.InvokeVoidAsync("init", _elementRef, _jsHandler, Multiple);
+			await JSObject.InvokeVoidAsync("init", Aborted, _elementRef, _jsHandler, Multiple);
 		}
 		catch (JSDisconnectedException) { }
+		catch (OperationCanceledException) when (Aborted.IsCancellationRequested) { }
 	}
 
 	protected override async ValueTask DisposeAsyncCore()

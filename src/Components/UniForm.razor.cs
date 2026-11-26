@@ -188,6 +188,7 @@ public sealed partial class UniForm : UniJSComponentBase
 				await JSObject.InvokeVoidAsync("scrollToFirstError", Aborted, Id);
 			}
 			catch (JSDisconnectedException) { }
+			catch (OperationCanceledException) when (Aborted.IsCancellationRequested) { }
 		}
 	}
 

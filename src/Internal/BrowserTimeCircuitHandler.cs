@@ -31,5 +31,6 @@ public class BrowserTimeCircuitHandler(
 			timeProvider.SetBrowserTimeZone(timeZone);
 		}
 		catch (JSDisconnectedException) { }
+		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
 	}
 }
